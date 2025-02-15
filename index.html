@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>Perry has an UCSB Adventure</title>
+  <style>
+    body {
+      background-color: black;
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 1024px;
+      height: 576px;
+      overflow: hidden;
+    }
+
+
+    .dialogue-box {
+      position: absolute;
+      top: 410px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 120px;
+      background-color: white;
+      border: 4px solid #4A90E2;
+      padding: 12px;
+      font-size: 24px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      border-radius: 10px;
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+      font-family: "Press Start 2P", sans-serif;
+    }
+
+
+    .hidden {
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .dialogue-text {
+      flex: 1;
+      padding-right: 15px;
+      color: black;
+      line-height: 2;
+      font-size: 20px;
+      word-wrap: break-word;
+    }
+
+    .dialogue-box button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: black;
+      font-weight: bold;
+      padding: 20px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div id="gameContainer">
+    <canvas></canvas>
+
+    <div id="dialogueBox" class="dialogue-box hidden">
+      <p id="dialogueText"></p>
+      <button id="continueButton">▶</button>
+    </div>
+  </div>
+
+  <script src="data/collisions.js"></script>
+  <script src="data/npcDialogues.js"></script>
+  <script src="classes.js"></script>
+  <script src="index.js"></script>
+
+</body>
+</html>
+
+
