@@ -238,7 +238,7 @@ let lastKey = "";
 function animate() {
   window.requestAnimationFrame(animate);
   background.draw();
-  grid.draw();
+  // grid.draw();
   boundaries.forEach((boundary) => boundary.draw());
 
   // NPC detection and drawing
@@ -270,37 +270,56 @@ function animate() {
 
 animate()
 
-const GRID_SIZE = 64;
 let isMoving = false;
-
 let queuedDirection = null;
-let stepProgress = 0; // Tracks movement within a step
+let stepProgress = 0;
+let currentFrame = null;
+const TILE_SIZE = 64;
+
+let lastMoveTime = 0;
+let lastDirectionSwitchTime = performance.now();
+
 
 function movePlayer(direction) {
+  if (isDialogueActive || isMoving) return;
 
-  if (isDialogueActive) return;
+  const now = performance.now();
+  // console.log(`🎯 Key Pressed: ${direction}, LastKey: ${lastKey}, IsMoving: ${isMoving}`);
 
-  if (isMoving) {
-    queuedDirection = direction; // Store new input, but allow immediate direction switching
-    return;
+  // Measure switch time
+  if (direction !== lastKey) {
+    const switchTime = Math.round(now - lastDirectionSwitchTime);
+    console.log(`⏳ Time taken to switch direction from ${lastKey} to ${direction}: ${switchTime}ms`);
+    lastDirectionSwitchTime = now;
+  }
+
+  // 🚨 **FORCE INSTANT SWITCHING**
+  if (isMoving && direction !== lastKey) {
+    console.log(`⏩ Instant Switch: Stopping ${lastKey}, Switching to ${direction}`);
+    cancelAnimationFrame(currentFrame);
+
+    isMoving = false;  // ✅ Stop current movement
+    queuedDirection = null;
+    lastKey = direction;
+
+    // 🚀 **Immediately start new movement**
+    return movePlayer(direction);
   }
 
   isMoving = true;
   player.moving = true;
   lastKey = direction;
+  stepProgress = 0;
+
   let moveX = 0, moveY = 0;
-
-  let prevFrame = player.frames.val;  // Save the current animation frame
-
   switch (direction) {
-    case "w": player.image = player.sprites.up; moveY = -64; break;
-    case "a": player.image = player.sprites.left; moveX = -64; break;
-    case "s": player.image = player.sprites.down; moveY = 64; break;
-    case "d": player.image = player.sprites.right; moveX = 64; break;
+    case "w": player.image = player.sprites.up; moveY = -TILE_SIZE; break;
+    case "a": player.image = player.sprites.left; moveX = -TILE_SIZE; break;
+    case "s": player.image = player.sprites.down; moveY = TILE_SIZE; break;
+    case "d": player.image = player.sprites.right; moveX = TILE_SIZE; break;
   }
 
-  player.frames.val = prevFrame;
-
+  // Check for collision
   let willCollide = boundaries.some(boundary =>
     rectangularCollision({
       rectangle1: { position: { x: player.position.x + moveX, y: player.position.y + moveY }, width: player.width, height: player.height },
@@ -309,53 +328,92 @@ function movePlayer(direction) {
   );
 
   if (willCollide) {
+    console.log("🚧 Collision detected, stopping movement");
     isMoving = false;
     player.moving = false;
     return;
   }
 
-  // 🚶‍♂️ Smooth movement in 8 steps with mid-step switching
-  stepProgress = 0;
-  const MOVEMENT_STEPS = 16;
+  // **Reduce movement steps to make direction switching feel instant**
+  let adjustedSteps = MOVEMENT_STEPS;
+  let stepSizeX = moveX / adjustedSteps;
+  let stepSizeY = moveY / adjustedSteps;
+
 
   function stepMove() {
-    if (stepProgress < MOVEMENT_STEPS) {
-      // 🔥 If a new key is pressed mid-movement, **immediately switch direction**
-      if (queuedDirection) {
-        isMoving = false;
-        movePlayer(queuedDirection);
-        queuedDirection = null;
-        return;
-      }
-
+    if (stepProgress < adjustedSteps) {
       movables.forEach(movable => {
-        movable.position.x -= moveX / MOVEMENT_STEPS;
-        movable.position.y -= moveY / MOVEMENT_STEPS;
+        movable.position.x -= stepSizeX;
+        movable.position.y -= stepSizeY;
       });
 
       stepProgress++;
-      requestAnimationFrame(stepMove);
+      currentFrame = requestAnimationFrame(stepMove);
     } else {
+      // console.log(`✅ Move complete.`);
+
       isMoving = false;
       player.moving = false;
+
+      if (queuedDirection) {
+        // console.log(`🔄 Queued movement detected: ${queuedDirection}`);
+        movePlayer(queuedDirection);
+        queuedDirection = null;
+      }
     }
   }
 
-  stepMove();
+  requestAnimationFrame(stepMove);
 }
 
-// ✅ Prevents movement before the previous step finishes
 window.addEventListener("keydown", (e) => {
-  if (isDialogueActive) return;
+  if (e.key === "Enter") {
+    if (activeNpc && !isDialogueActive) {
+      const dialogueBox = document.getElementById("dialogueBox");
 
-  if (!isMoving) {
-    switch (e.key) {
-      case "w": movePlayer("w"); break;
-      case "a": movePlayer("a"); break;
-      case "s": movePlayer("s"); break;
-      case "d": movePlayer("d"); break;
+      dialogueBox.classList.remove("hidden");
+      dialogueBox.style.visibility = "visible";
+      dialogueBox.style.opacity = "1";
+      dialogueBox.style.display = "flex";
+
+      const npcName = activeNpc.name;
+
+      if (!npcDialogues[npcName]) return;
+
+      dialogueIndex = 0;
+      isDialogueActive = true;
+
+      document.getElementById("dialogueText").innerText =
+        npcDialogues[npcName][dialogueIndex];
+    } else if (isDialogueActive) {
+      dialogueIndex++;
+
+      const npcName = activeNpc.name;
+      if (dialogueIndex < npcDialogues[npcName].length) {
+        document.getElementById("dialogueText").innerText =
+          npcDialogues[npcName][dialogueIndex];
+      } else {
+        document.getElementById("dialogueBox").classList.add("hidden");
+        document.getElementById("dialogueBox").style.visibility = "hidden";
+        document.getElementById("dialogueBox").style.display = "none";
+
+        isDialogueActive = false;
+        dialogueIndex = 0;
+        activeNpc = null;
+      }
     }
+    return; // ⛔ Prevent movement when pressing "Enter"
   }
+
+  if (isDialogueActive) return; // ⛔ Block movement during dialogue
+
+  // Movement Handling
+  if (isMoving) {
+    if (!queuedDirection) queuedDirection = e.key;  // ✅ **Queue only if empty**
+    return;
+  }
+
+  movePlayer(e.key);
 });
 
 window.addEventListener("keyup", (e) => {
@@ -372,47 +430,5 @@ window.addEventListener("keyup", (e) => {
     case "d":
       keys.d.pressed = false;
       break;
-  }
-});
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-
-    if (activeNpc && !isDialogueActive) {
-
-      const dialogueBox = document.getElementById("dialogueBox");
-
-      dialogueBox.classList.remove("hidden");
-      dialogueBox.style.visibility = "visible";
-      dialogueBox.style.opacity = "1";
-      dialogueBox.style.display = "flex";
-
-      const npcName = activeNpc.name;
-
-      if (!npcDialogues[npcName]) {
-        return;
-      }
-
-      dialogueIndex = 0;
-      isDialogueActive = true;
-
-      document.getElementById("dialogueText").innerText = npcDialogues[npcName][dialogueIndex];
-
-    } else if (isDialogueActive) {
-      dialogueIndex++;
-
-      const npcName = activeNpc.name;
-      if (dialogueIndex < npcDialogues[npcName].length) {
-        document.getElementById("dialogueText").innerText = npcDialogues[npcName][dialogueIndex];
-      } else {
-        document.getElementById("dialogueBox").classList.add("hidden");
-        document.getElementById("dialogueBox").style.visibility = "hidden";
-        document.getElementById("dialogueBox").style.display = "none";
-
-        isDialogueActive = false;
-        dialogueIndex = 0;
-        activeNpc = null;
-      }
-    }
   }
 });
