@@ -1,3 +1,4 @@
+
 class Sprite {
   constructor({ position, velocity, image, frames = {max: 1}, sprites, name}) {
     this.position = position;
@@ -57,9 +58,13 @@ class Boundary {
 }
 
 const offset = {
-  x: Math.round(-600 / 64) * 64, // Round to nearest grid position
-  y: Math.round(-1070 / 64) * 64
+  x: Math.floor(-600 / 64) * 64, // Force align to grid
+  y: Math.floor(-1070 / 64) * 64
 };
+
+// Add these debug values to check alignment
+console.log('Offset x:', offset.x, 'aligned?', offset.x % 64 === 0);
+console.log('Offset y:', offset.y, 'aligned?', offset.y % 64 === 0);
 
 class Grid {
   constructor() {

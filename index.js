@@ -73,8 +73,8 @@ quynhImage.src = "./img/NPCs/Quynh.png";
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2,
-    y: canvas.height / 2 - 64 / 2
+    x: Math.floor(canvas.width / 2 / 64) * 64,  // Force grid alignment
+    y: Math.floor(canvas.height / 2 / 64) * 64,
   },
   image: playerDownImage,
   frames: {
@@ -164,7 +164,6 @@ const npcs = [
   }),
 ];
 
-
 const background = new Sprite({
   position: {
     x: offset.x,
@@ -204,10 +203,10 @@ const keys = {
   },
 };
 
-const npcBoundaries = [];
+// const npcBoundaries = [];
 
 npcs.forEach(npc => {
-  npcBoundaries.push(
+  boundaries.push(
     new Boundary({
       position: {
         x: npc.position.x,
@@ -219,7 +218,7 @@ npcs.forEach(npc => {
   );
 });
 
-const movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, ...npcBoundaries]
+const movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs]
 
 function rectangularCollision({rectangle1, rectangle2}) {
   return (
@@ -232,286 +231,111 @@ function rectangularCollision({rectangle1, rectangle2}) {
 
 let dialogueIndex = 0;
 let isDialogueActive = false;
-let lastKey = "";
-
 
 function animate() {
-
   window.requestAnimationFrame(animate);
   background.draw();
-  boundaries.forEach((boundary) => {
-    boundary.draw()
+  grid.draw();
+  boundaries.forEach((boundary) => boundary.draw());
 
-    if (
-      rectangularCollision({
-        rectangle1: player,
-        rectangle2: boundary
-      })
-    ) {
-      console.log('Player is colliding with boundary at initial position')
-    }
-
-  })
-
+  // NPC detection and drawing
   let npcNearby = null;
-
   npcs.forEach(npc => {
     npc.draw();
-
     const distanceX = Math.abs(npc.position.x - player.position.x);
     const distanceY = Math.abs(npc.position.y - player.position.y);
 
     if (
-      (distanceX <= 68 && distanceY <= 3 && (lastKey === "a" || lastKey === "d")) || // Left or Right (Y must match)
-      (distanceY <= 68 && distanceX <= 3 && (lastKey === "w" || lastKey === "s"))    // Up or Down (X must match)
+      (distanceX <= 68 && distanceY <= 3 && (lastKey === "a" || lastKey === "d")) ||
+      (distanceY <= 68 && distanceX <= 3 && (lastKey === "w" || lastKey === "s"))
     ) {
-      console.log(`✅ Perry is aligned and facing ${npc.name}`);
       npcNearby = npc;
     }
   });
 
   activeNpc = npcNearby;
-
   player.draw();
   foreground.draw();
   extraForegroundObjects.draw();
 
-  if (isDialogueActive) {
-    return;
-  }
-
-  let moving = true
-  player.moving = false
-
-  if (keys.w.pressed && lastKey === "w") {
-    player.moving = true
-    player.image = player.sprites.up
-
-    for (let i =0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x,
-              y: boundary.position.y + 3
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
-      }
-    }
-
-    for (let i = 0; i < npcBoundaries.length; i++) {
-      const npcBoundary = npcBoundaries[i];
-      if (rectangularCollision({
-          rectangle1: player,
-          rectangle2: { ...npcBoundary,
-            position: {
-               x: npcBoundary.position.x,
-               y: npcBoundary.position.y + 3
-              }
-            }
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-
-    if (moving) {
-    movables.forEach(movable => {
-        movable.position.y +=1
-      });
-    }
-   }
-
-  else if (keys.a.pressed && lastKey === "a") {
-    player.moving = true
-    player.image = player.sprites.left
-    for (let i =0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x + 3,
-              y: boundary.position.y
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
-      }
-    }
-
-    for (let i = 0; i < npcBoundaries.length; i++) {
-      const npcBoundary = npcBoundaries[i];
-      if (rectangularCollision({
-          rectangle1: player,
-          rectangle2: { ...npcBoundary,
-            position: {
-               x: npcBoundary.position.x + 3,
-               y: npcBoundary.position.y
-              }
-            }
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-
-    if (moving) {
-      movables.forEach(movable => {
-        movable.position.x += 1;
-      });
-    }
-  }
-
-  else if (keys.s.pressed && lastKey === "s") {
-    player.moving = true
-    player.image = player.sprites.down
-    for (let i =0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x,
-              y: boundary.position.y - 3
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
-      }
-    }
-
-    for (let i = 0; i < npcBoundaries.length; i++) {
-      const npcBoundary = npcBoundaries[i];
-      if (rectangularCollision({
-          rectangle1: player,
-          rectangle2: { ...npcBoundary,
-            position: {
-               x: npcBoundary.position.x,
-               y: npcBoundary.position.y - 3
-              }
-            }
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-
-    if (moving) {
-    movables.forEach(movable => {
-      movable.position.y -= 1;
-      });
-    }
-  }
-
-  else if (keys.d.pressed && lastKey === "d") {
-    player.moving = true
-    player.image = player.sprites.right
-    for (let i =0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x - 3,
-              y: boundary.position.y
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
-      }
-    }
-
-    for (let i = 0; i < npcBoundaries.length; i++) {
-      const npcBoundary = npcBoundaries[i];
-      if (rectangularCollision({
-          rectangle1: player,
-          rectangle2: { ...npcBoundary,
-            position: {
-               x: npcBoundary.position.x -3 ,
-               y: npcBoundary.position.y
-              }
-            }
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-
-    if (moving) {
-    movables.forEach(movable => {
-      movable.position.x -= 1;
-      });
-    }
-  }
-
+  if (isDialogueActive) return;
 }
 
 animate()
 
+const GRID_SIZE = 64;
+let isMoving = false;
+let lastKey = "";
 
+function movePlayer(direction) {
+  if (isMoving) return; // Prevent multiple moves at once
+
+  isMoving = true;
+  let moveX = 0, moveY = 0;
+
+  switch (direction) {
+    case "w": player.image = player.sprites.up; moveY = -GRID_SIZE; break;
+    case "a": player.image = player.sprites.left; moveX = -GRID_SIZE; break;
+    case "s": player.image = player.sprites.down; moveY = GRID_SIZE; break;
+    case "d": player.image = player.sprites.right; moveX = GRID_SIZE; break;
+  }
+
+  // Check collision **before moving**
+  let willCollide = boundaries.some(boundary =>
+    rectangularCollision({
+      rectangle1: {
+        position: {
+          x: player.position.x + moveX,
+          y: player.position.y + moveY
+        },
+        width: player.width,
+        height: player.height
+      },
+      rectangle2: boundary
+    })
+  );
+
+  if (willCollide) {
+    console.log("🚧 Collision detected! Can't move here.");
+    isMoving = false;
+    return;
+  }
+
+  // Smooth step-based movement
+  let step = 0;
+  const stepSize = 8; // Smaller increments for smooth movement
+  const totalSteps = GRID_SIZE / stepSize; // Number of steps to complete 64px move
+
+  function stepMove() {
+    if (step < totalSteps) {
+      movables.forEach((movable) => {
+        movable.position.x -= moveX / totalSteps;
+        movable.position.y -= moveY / totalSteps;
+      });
+
+      step++;
+      requestAnimationFrame(stepMove);
+    } else {
+      isMoving = false; // Unlock movement after step completes
+      player.position.x = Math.round(player.position.x / GRID_SIZE) * GRID_SIZE; // Snap to grid
+      player.position.y = Math.round(player.position.y / GRID_SIZE) * GRID_SIZE;
+    }
+  }
+
+  stepMove();
+}
+
+// ✅ Prevents movement before the previous step finishes
 window.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "w":
-      keys.w.pressed = true;
-      lastKey = "w";
-      break;
-    case "a":
-      keys.a.pressed = true;
-      lastKey = "a";
-      break;
-    case "s":
-      keys.s.pressed = true;
-      lastKey = "s";
-      break;
-    case "d":
-      keys.d.pressed = true;
-      lastKey = "d";
-      break;
+  if (!isMoving) {
+    switch (e.key) {
+      case "w": movePlayer("w"); break;
+      case "a": movePlayer("a"); break;
+      case "s": movePlayer("s"); break;
+      case "d": movePlayer("d"); break;
+    }
   }
 });
-
-// window.addEventListener("keydown", (e) => {
-//   if (!isMoving) {
-//     switch (e.key) {
-//       case "w":
-//         movePlayer("w");
-//         break;
-//       case "a":
-//         movePlayer("a");
-//         break;
-//       case "s":
-//         movePlayer("s");
-//         break;
-//       case "d":
-//         movePlayer("d");
-//         break;
-//     }
-//   }
-// });
 
 window.addEventListener("keyup", (e) => {
   switch (e.key) {
