@@ -338,6 +338,8 @@ function movePlayer(direction) {
 
 // ✅ Prevents movement before the previous step finishes
 window.addEventListener("keydown", (e) => {
+  if (isDialogueActive) return;
+
   if (!isMoving) {
     switch (e.key) {
       case "w": movePlayer("w"); break;
