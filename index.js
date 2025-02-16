@@ -231,6 +231,7 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
 
 let dialogueIndex = 0;
 let isDialogueActive = false;
+let lastKey = "";
 
 function animate() {
   window.requestAnimationFrame(animate);
@@ -242,20 +243,21 @@ function animate() {
   let npcNearby = null;
   npcs.forEach(npc => {
     npc.draw();
+
+    // Ensure the player is aligned on the correct axis
     const distanceX = Math.abs(npc.position.x - player.position.x);
     const distanceY = Math.abs(npc.position.y - player.position.y);
 
     if (
-      (distanceX <= 68 && distanceY <= 3 && (lastKey === "a" || lastKey === "d")) ||
-      (distanceY <= 68 && distanceX <= 3 && (lastKey === "w" || lastKey === "s"))
+      (distanceX === 64 && distanceY === 0 && (lastKey === "a" || lastKey === "d")) ||  // Left/Right detection
+      (distanceY === 64 && distanceX === 0 && (lastKey === "w" || lastKey === "s"))    // Up/Down detection
     ) {
+      console.log(`✅ NPC detected: ${npc.name}`);
       npcNearby = npc;
     }
   });
 
-  activeNpc = npcNearby;
-  // console.log("🎯 Active NPC:", activeNpc ? activeNpc.name : "None");
-  // console.log("📌 All NPCs:", npcs.map(npc => npc.name));
+  activeNpc = npcNearby; // Update the active NPC
 
   player.draw();
   foreground.draw();
@@ -268,7 +270,6 @@ animate()
 
 const GRID_SIZE = 64;
 let isMoving = false;
-let lastKey = "";
 
 let queuedDirection = null;
 let stepProgress = 0; // Tracks movement within a step
@@ -281,6 +282,7 @@ function movePlayer(direction) {
 
   isMoving = true;
   player.moving = true;
+  lastKey = direction;
   let moveX = 0, moveY = 0;
 
   switch (direction) {
@@ -330,7 +332,6 @@ function movePlayer(direction) {
 
   stepMove();
 }
-
 
 // ✅ Prevents movement before the previous step finishes
 window.addEventListener("keydown", (e) => {
