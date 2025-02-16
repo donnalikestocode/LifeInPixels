@@ -148,7 +148,7 @@ const npcs = [
     name: "Connie"
   }),
   new Sprite({
-    position: {x: 2555, y: 725 },
+    position: {x: 2560, y: 704 },
     image: davidImage,
     name: "David"
   }),
@@ -254,6 +254,9 @@ function animate() {
   });
 
   activeNpc = npcNearby;
+  // console.log("🎯 Active NPC:", activeNpc ? activeNpc.name : "None");
+  // console.log("📌 All NPCs:", npcs.map(npc => npc.name));
+
   player.draw();
   foreground.draw();
   extraForegroundObjects.draw();
