@@ -325,7 +325,7 @@ function animate() {
 
     if (moving) {
     movables.forEach(movable => {
-        movable.position.y +=3
+        movable.position.y +=1
       });
     }
    }
@@ -371,7 +371,7 @@ function animate() {
 
     if (moving) {
       movables.forEach(movable => {
-        movable.position.x += 3;
+        movable.position.x += 1;
       });
     }
   }
@@ -417,7 +417,7 @@ function animate() {
 
     if (moving) {
     movables.forEach(movable => {
-      movable.position.y -= 3;
+      movable.position.y -= 1;
       });
     }
   }
@@ -463,7 +463,7 @@ function animate() {
 
     if (moving) {
     movables.forEach(movable => {
-      movable.position.x -= 3;
+      movable.position.x -= 1;
       });
     }
   }
