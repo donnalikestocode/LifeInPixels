@@ -1,6 +1,8 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
+window.MOVEMENT_STEPS = 16;
+
 canvas.width = 1024;
 canvas.height = 576;
 
@@ -288,12 +290,16 @@ function movePlayer(direction) {
   lastKey = direction;
   let moveX = 0, moveY = 0;
 
+  let prevFrame = player.frames.val;  // Save the current animation frame
+
   switch (direction) {
     case "w": player.image = player.sprites.up; moveY = -64; break;
     case "a": player.image = player.sprites.left; moveX = -64; break;
     case "s": player.image = player.sprites.down; moveY = 64; break;
     case "d": player.image = player.sprites.right; moveX = 64; break;
   }
+
+  player.frames.val = prevFrame;
 
   let willCollide = boundaries.some(boundary =>
     rectangularCollision({
@@ -310,8 +316,10 @@ function movePlayer(direction) {
 
   // 🚶‍♂️ Smooth movement in 8 steps with mid-step switching
   stepProgress = 0;
+  const MOVEMENT_STEPS = 16;
+
   function stepMove() {
-    if (stepProgress < 8) {
+    if (stepProgress < MOVEMENT_STEPS) {
       // 🔥 If a new key is pressed mid-movement, **immediately switch direction**
       if (queuedDirection) {
         isMoving = false;
@@ -321,8 +329,8 @@ function movePlayer(direction) {
       }
 
       movables.forEach(movable => {
-        movable.position.x -= moveX / 8;
-        movable.position.y -= moveY / 8;
+        movable.position.x -= moveX / MOVEMENT_STEPS;
+        movable.position.y -= moveY / MOVEMENT_STEPS;
       });
 
       stepProgress++;

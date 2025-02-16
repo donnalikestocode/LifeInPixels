@@ -1,3 +1,4 @@
+const MOVEMENT_STEPS = window.MOVEMENT_STEPS || 16;
 
 class Sprite {
   constructor({ position, velocity, image, frames = {max: 1}, sprites, name}) {
@@ -35,9 +36,13 @@ class Sprite {
       this.frames.elapsed++
     }
 
-    if (this.frames.elapsed % 20 === 0) {
+    if (this.frames.elapsed % MOVEMENT_STEPS === 0) {
       if (this.frames.val < this.frames.max - 1) this.frames.val++
       else this.frames.val = 0
+    }
+
+    if (this.frames.elapsed >= MOVEMENT_STEPS) {
+      this.frames.elapsed = 0;
     }
   }
 }
