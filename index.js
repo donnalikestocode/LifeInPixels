@@ -275,6 +275,9 @@ let queuedDirection = null;
 let stepProgress = 0; // Tracks movement within a step
 
 function movePlayer(direction) {
+
+  if (isDialogueActive) return;
+
   if (isMoving) {
     queuedDirection = direction; // Store new input, but allow immediate direction switching
     return;
