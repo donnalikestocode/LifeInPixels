@@ -268,62 +268,51 @@ let isMoving = false;
 let lastKey = "";
 
 function movePlayer(direction) {
-  if (isMoving) return; // Prevent multiple moves at once
+  if (isMoving) return; // Prevent spamming
 
   isMoving = true;
+  player.moving = true;  // ✅ Ensures animation starts
   let moveX = 0, moveY = 0;
 
   switch (direction) {
-    case "w": player.image = player.sprites.up; moveY = -GRID_SIZE; break;
-    case "a": player.image = player.sprites.left; moveX = -GRID_SIZE; break;
-    case "s": player.image = player.sprites.down; moveY = GRID_SIZE; break;
-    case "d": player.image = player.sprites.right; moveX = GRID_SIZE; break;
+    case "w": player.image = player.sprites.up; moveY = -64; break;
+    case "a": player.image = player.sprites.left; moveX = -64; break;
+    case "s": player.image = player.sprites.down; moveY = 64; break;
+    case "d": player.image = player.sprites.right; moveX = 64; break;
   }
 
-  // Check collision **before moving**
   let willCollide = boundaries.some(boundary =>
     rectangularCollision({
-      rectangle1: {
-        position: {
-          x: player.position.x + moveX,
-          y: player.position.y + moveY
-        },
-        width: player.width,
-        height: player.height
-      },
+      rectangle1: { position: { x: player.position.x + moveX, y: player.position.y + moveY }, width: player.width, height: player.height },
       rectangle2: boundary
     })
   );
 
   if (willCollide) {
-    console.log("🚧 Collision detected! Can't move here.");
     isMoving = false;
+    player.moving = false; // ✅ Ensures animation stops
     return;
   }
 
-  // Smooth step-based movement
+  // 🚶‍♂️ Smooth movement animation
   let step = 0;
-  const stepSize = 8; // Smaller increments for smooth movement
-  const totalSteps = GRID_SIZE / stepSize; // Number of steps to complete 64px move
-
   function stepMove() {
-    if (step < totalSteps) {
-      movables.forEach((movable) => {
-        movable.position.x -= moveX / totalSteps;
-        movable.position.y -= moveY / totalSteps;
+    if (step < 8) { // Move in small steps for smooth animation
+      movables.forEach(movable => {
+        movable.position.x -= moveX / 8;
+        movable.position.y -= moveY / 8;
       });
-
       step++;
       requestAnimationFrame(stepMove);
     } else {
-      isMoving = false; // Unlock movement after step completes
-      player.position.x = Math.round(player.position.x / GRID_SIZE) * GRID_SIZE; // Snap to grid
-      player.position.y = Math.round(player.position.y / GRID_SIZE) * GRID_SIZE;
+      isMoving = false;
+      player.moving = false; // ✅ Stops animation at end of movement
     }
   }
 
   stepMove();
 }
+
 
 // ✅ Prevents movement before the previous step finishes
 window.addEventListener("keydown", (e) => {
