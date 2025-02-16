@@ -267,11 +267,17 @@ const GRID_SIZE = 64;
 let isMoving = false;
 let lastKey = "";
 
+let queuedDirection = null;
+let stepProgress = 0; // Tracks movement within a step
+
 function movePlayer(direction) {
-  if (isMoving) return; // Prevent spamming
+  if (isMoving) {
+    queuedDirection = direction; // Store new input, but allow immediate direction switching
+    return;
+  }
 
   isMoving = true;
-  player.moving = true;  // ✅ Ensures animation starts
+  player.moving = true;
   let moveX = 0, moveY = 0;
 
   switch (direction) {
@@ -290,23 +296,32 @@ function movePlayer(direction) {
 
   if (willCollide) {
     isMoving = false;
-    player.moving = false; // ✅ Ensures animation stops
+    player.moving = false;
     return;
   }
 
-  // 🚶‍♂️ Smooth movement animation
-  let step = 0;
+  // 🚶‍♂️ Smooth movement in 8 steps with mid-step switching
+  stepProgress = 0;
   function stepMove() {
-    if (step < 8) { // Move in small steps for smooth animation
+    if (stepProgress < 8) {
+      // 🔥 If a new key is pressed mid-movement, **immediately switch direction**
+      if (queuedDirection) {
+        isMoving = false;
+        movePlayer(queuedDirection);
+        queuedDirection = null;
+        return;
+      }
+
       movables.forEach(movable => {
         movable.position.x -= moveX / 8;
         movable.position.y -= moveY / 8;
       });
-      step++;
+
+      stepProgress++;
       requestAnimationFrame(stepMove);
     } else {
       isMoving = false;
-      player.moving = false; // ✅ Stops animation at end of movement
+      player.moving = false;
     }
   }
 
