@@ -526,55 +526,32 @@ function startDonnaDialogue() {
 }
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    if (activeNpc && !isDialogueActive) {
+  if(isDialogueActive) {
+    advanceDialogue(e);
+    return;
+  }
 
+  if (e.key === "Enter") {
+    if (isDialogueActive) {
+      advanceDialogue(e); // ✅ Route all dialogue handling to a single function
+      return; // ⛔ Prevent other actions during dialogue
+    }
+
+    if (e.key === "Enter" && activeNpc) {
       if (window.gameState.bikeMode) {
         window.gameState.bikeMode = false;
         updateMovementSpeed();
-        updatePlayerSprite();  // 🔄 Instantly switch back to walking sprite
+        updatePlayerSprite(); // 🔄 Switch back to walking sprite
       }
 
       handleNpcInteraction(activeNpc);
 
-      const dialogueBox = document.getElementById("dialogueBox");
-
-      dialogueBox.classList.remove("hidden");
-      dialogueBox.style.visibility = "visible";
-      dialogueBox.style.opacity = "1";
-      dialogueBox.style.display = "flex";
-
-      const npcName = activeNpc.name;
-
-      if (!npcDialogues[npcName]) return;
-
-      dialogueIndex = 0;
-      isDialogueActive = true;
-
-      document.getElementById("dialogueText").innerText =
-        npcDialogues[npcName][dialogueIndex];
-
-    } else if (isDialogueActive) {
-      dialogueIndex++;
-
-      const npcName = activeNpc.name;
-      if (dialogueIndex < npcDialogues[npcName].length) {
-        document.getElementById("dialogueText").innerText =
-          npcDialogues[npcName][dialogueIndex];
-      } else {
-        document.getElementById("dialogueBox").classList.add("hidden");
-        document.getElementById("dialogueBox").style.visibility = "hidden";
-        document.getElementById("dialogueBox").style.display = "none";
-
-        isDialogueActive = false;
-        dialogueIndex = 0;
-        activeNpc = null;
-      }
+      startDialogue(activeNpc.name); // ✅ Use function instead of duplicating logic
+      return;
     }
-    return; // ⛔ Prevent movement when pressing "Enter"
-  }
 
   if (isDialogueActive) return; // ⛔ Block movement during dialogue
+  }
 
   if (e.key === "b") {
 
@@ -641,8 +618,54 @@ function handleNpcInteraction(npc) {
         window.gameState.donnaBoundaryAdded = true;
         window.gameState.boundariesNeedUpdate = true;
       }
+
+      // ⏳ Wait 7 seconds, then trigger Perry's realization
+      setTimeout(() => {
+        startDialogue("PerryHint");
+      }, 7000);
+    }
+
+  }
+}
+
+function advanceDialogue(event) {
+  if (event.key === "Enter") {
+    dialogueIndex++;
+
+    if (dialogueIndex < currentDialogue.length) {
+      document.getElementById("dialogueText").innerText = currentDialogue[dialogueIndex];
+    } else {
+      // 🎉 End dialogue
+      document.getElementById("dialogueBox").classList.add("hidden");
+      document.getElementById("dialogueBox").style.display = "none";
+
+      isDialogueActive = false;
+      window.gameState.freezePerry = false; // ✅ Unfreeze Perry
+
+      dialogueIndex = 0;
+      currentDialogue = null;
     }
   }
+}
+
+
+function startDialogue(npcName) {
+  if (!npcDialogues[npcName]) return;
+
+  dialogueIndex = 0;
+  isDialogueActive = true;
+  window.gameState.freezePerry = true; // ⛔ Freeze movement
+
+  currentDialogue = npcDialogues[npcName]; // ✅ Track active dialogue
+
+  // ✅ Ensure the dialogue box is fully visible
+  const dialogueBox = document.getElementById("dialogueBox");
+  dialogueBox.classList.remove("hidden");
+  dialogueBox.style.visibility = "visible";
+  dialogueBox.style.opacity = "1";
+  dialogueBox.style.display = "flex";
+
+  document.getElementById("dialogueText").innerText = currentDialogue[dialogueIndex];
 }
 
 function refreshBoundaries() {

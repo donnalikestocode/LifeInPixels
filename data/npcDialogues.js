@@ -36,5 +36,8 @@ const npcDialogues = {
     "Here’s your Hana Kitchen order—extra spicy, just how you like it.",
     "Nah, I haven’t seen Donna yet.",
     "Catch you later, bro!"
+  ],
+  "PerryHint": [
+    "Wait... I think I know where to find her. Donna must be at the library!"
   ]
 };
