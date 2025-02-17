@@ -7,11 +7,6 @@ window.gameState = {
 
 function updateMovementSpeed() {
   window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
-  console.log(
-    window.gameState.bikeMode
-      ? "🚲 Biking Mode Activated! Speed should increase."
-      : "🚶 Walking Mode Activated! Speed should decrease."
-  );
 
   if (isMoving) {
     isMoving = false;
@@ -288,7 +283,6 @@ function animate() {
       (distanceX === 64 && distanceY === 0 && (lastKey === "a" || lastKey === "d")) ||  // Left/Right detection
       (distanceY === 64 && distanceX === 0 && (lastKey === "w" || lastKey === "s"))    // Up/Down detection
     ) {
-      console.log(`✅ NPC detected: ${npc.name}`);
       npcNearby = npc;
     }
   });
@@ -321,18 +315,15 @@ function movePlayer(direction) {
   window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
 
   const now = performance.now();
-  // console.log(`🎯 Key Pressed: ${direction}, LastKey: ${lastKey}, IsMoving: ${isMoving}`);
 
   // Measure switch time
   if (direction !== lastKey) {
     const switchTime = Math.round(now - lastDirectionSwitchTime);
-    console.log(`⏳ Time taken to switch direction from ${lastKey} to ${direction}: ${switchTime}ms`);
     lastDirectionSwitchTime = now;
   }
 
   // 🚨 **FORCE INSTANT SWITCHING**
   if (isMoving && direction !== lastKey) {
-    console.log(`⏩ Instant Switch: Stopping ${lastKey}, Switching to ${direction}`);
     cancelAnimationFrame(currentFrame);
 
     isMoving = false;  // ✅ Stop current movement
@@ -365,7 +356,6 @@ function movePlayer(direction) {
   );
 
   if (willCollide) {
-    console.log("🚧 Collision detected, stopping movement");
     isMoving = false;
     player.moving = false;
     return;
@@ -393,23 +383,15 @@ function movePlayer(direction) {
       let movementDuration = (movementEndTime - movementStartTime) / 1000; // Convert to seconds
       let speed = 1 / movementDuration; // Steps per second
 
-      console.log(
-        window.gameState.bikeMode
-          ? `🚲 Bike Speed: ${speed.toFixed(2)} steps/sec`
-          : `🚶 Walking Speed: ${speed.toFixed(2)} steps/sec`
-      );
-
       isMoving = false;
       player.moving = false;
 
       if (queuedDirection) {
-        // console.log(`🔄 Queued movement detected: ${queuedDirection}`);
         movePlayer(queuedDirection);
         queuedDirection = null;
       }
     }
   }
-  console.log(`🚀 MOVEMENT_STEPS is now: ${window.MOVEMENT_STEPS}`);
 
   requestAnimationFrame(stepMove);
 }
@@ -467,11 +449,6 @@ window.addEventListener("keydown", (e) => {
     window.gameState.bikeMode = !window.gameState.bikeMode;
     updateMovementSpeed();
 
-    console.log(
-      window.gameState.bikeMode
-        ? "🚲 Biking Mode Activated! Speed should increase."
-        : "🚶 Walking Mode Activated! Speed should decrease."
-    );
   }
 
 });

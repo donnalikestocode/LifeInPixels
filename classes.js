@@ -10,7 +10,6 @@ class Sprite {
     this.image.onload = () => {
       this.width = this.image.width / this.frames.max;
       this.height = this.image.height;
-      console.log(this.width, this.height)
     }
 
     this.moving = false
@@ -67,9 +66,6 @@ const offset = {
   y: Math.floor(-1070 / 64) * 64
 };
 
-// Add these debug values to check alignment
-console.log('Offset x:', offset.x, 'aligned?', offset.x % 64 === 0);
-console.log('Offset y:', offset.y, 'aligned?', offset.y % 64 === 0);
 
 class Grid {
   constructor() {
