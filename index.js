@@ -1,6 +1,8 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
+const TILE_SIZE = 64;
+
 window.gameState = {
   bikeMode: false,
   talkedToNPCs: {},
@@ -8,42 +10,14 @@ window.gameState = {
 };
 
 function updateMovementSpeed() {
-  window.MOVEMENT_STEPS = window.gameState.bikeMode ? 32:16; // (32 for bike, 16 for walk)
+  console.log(`🚀 updateMovementSpeed() called! Current MOVEMENT_STEPS: ${window.MOVEMENT_STEPS}`);
 
-  if (isMoving) {
-    isMoving = false;
-    movePlayer(lastKey);  // 🚀 Apply the new speed instantly
-  }
+  // ✅ Ensure MOVEMENT_STEPS is always set properly
+  window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
+
+  console.log(`⚡ Speed Updated! New MOVEMENT_STEPS: ${window.MOVEMENT_STEPS}`);
 }
 
-function handleNpcInteraction(npc) {
-  if (!window.gameState.talkedToNPCs[npc.name]) {
-    window.gameState.talkedToNPCs[npc.name] = true;
-    console.log(`✅ Perry talked to ${npc.name}`);
-
-    // Check if Perry has talked to ALL NPCs
-    if (Object.values(window.gameState.talkedToNPCs).every(Boolean)) {
-      console.log("🎉 All NPCs talked to! Donna will move soon...");
-
-      // 🕒 Add a delay before Donna starts moving
-      setTimeout(() => {
-        console.log("📍 Capturing Perry's final location...");
-
-        // **Freeze Perry's movement**
-        isMoving = false;
-        window.gameState.freezePerry = true; // 🚫 Perry can't move now
-
-        const targetX = player.position.x;
-        const targetY = player.position.y - TILE_SIZE; // Stop 1 tile above Perry
-
-        console.log(`🚀 Donna will start moving to: X=${targetX}, Y=${targetY}`);
-
-        // Now trigger Donna’s movement
-        triggerDonnaMovement(targetX, targetY);
-      }, 7000); // ⏳ 3-second delay before Donna moves
-    }
-  }
-}
 
 function updatePlayerSprite() {
   // ✅ **Ensure lastKey is valid, default to standing "Down"**
@@ -72,7 +46,6 @@ function updatePlayerSprite() {
     console.error(`🚨 Missing sprite for lastKey: ${lastKey} (mapped: ${spriteKey})`); // Debugging
   }
 }
-
 
 canvas.width = 1024;
 canvas.height = 576;
@@ -202,15 +175,10 @@ const player = new Sprite({
 })
 
 const donna = new Sprite({
-  position: {
-    x: 500,
-    y: 100,
-  },
+  position: { x: 2880, y: 704},
   image: donnaDownImage,
   name: "Donna",
-  frames: {
-    max: 4
-  },
+  frames: { max: 4 },
   sprites: {
     up: donnaUpImage,
     down: donnaDownImage,
@@ -220,7 +188,8 @@ const donna = new Sprite({
     bikeDown: donnaBikeDownImage,
     bikeLeft: donnaBikeLeftImage,
     bikeRight: donnaBikeRightImage,
-  }
+  },
+  visible: false,
 });
 
 // const npcs = [
@@ -262,11 +231,11 @@ const donna = new Sprite({
 // ];
 
 const npcs = [
-  // new Sprite({
-  //   position: { x: 2688, y: 0 },
-  //   image: kevinImage,
-  //   name: "Kevin"
-  // }),
+  new Sprite({
+    position: { x: 2688, y: 0 },
+    image: kevinImage,
+    name: "Kevin"
+  }),
   new Sprite({
     position: { x: 960, y: 512 },
     image: lucasImage,
@@ -373,38 +342,58 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
 let dialogueIndex = 0;
 let isDialogueActive = false;
 let lastKey = "";
+let animationCount = 0;
+let animationStarted = false;  // ✅ Prevent multiple animate() calls
 
 function animate() {
-  window.requestAnimationFrame(animate);
-  background.draw();
-  grid.draw();
-  boundaries.forEach((boundary) => boundary.draw());
+  if (!animationStarted) {
+    animationStarted = true; // ✅ Set flag to prevent multiple calls
+  } else {
+    return; // ⛔ Stop extra calls
+  }
 
-  // NPC detection and drawing
-  let npcNearby = null;
-  npcs.forEach(npc => {
-    npc.draw();
+  let animationCount = 0;
 
-    // Ensure the player is aligned on the correct axis
-    const distanceX = Math.abs(npc.position.x - player.position.x);
-    const distanceY = Math.abs(npc.position.y - player.position.y);
+  function loop() {
+    animationCount++;
+    // console.log(`🖌️ animate() called! Frame #${animationCount}`);
 
-    if (
-      (distanceX === 64 && distanceY === 0 && (lastKey === "a" || lastKey === "d")) ||  // Left/Right detection
-      (distanceY === 64 && distanceX === 0 && (lastKey === "w" || lastKey === "s"))    // Up/Down detection
-    ) {
-      npcNearby = npc;
+    window.requestAnimationFrame(loop);
+
+    background.draw();
+    grid.draw();
+    boundaries.forEach((boundary) => boundary.draw());
+
+    // NPC detection and drawing
+    let npcNearby = null;
+    npcs.forEach(npc => {
+      npc.draw();
+
+      // Ensure the player is aligned on the correct axis
+      const distanceX = Math.abs(npc.position.x - player.position.x);
+      const distanceY = Math.abs(npc.position.y - player.position.y);
+
+      if (
+        (distanceX === 64 && distanceY === 0 && (lastKey === "a" || lastKey === "d")) ||  // Left/Right detection
+        (distanceY === 64 && distanceX === 0 && (lastKey === "w" || lastKey === "s"))    // Up/Down detection
+      ) {
+        npcNearby = npc;
+      }
+    });
+
+    activeNpc = npcNearby; // Update the active NPC
+
+    player.draw();
+    foreground.draw();
+    extraForegroundObjects.draw();
+
+    if (donna.visible) {
+      donna.draw();
     }
-  });
 
-  activeNpc = npcNearby; // Update the active NPC
-
-  player.draw();
-  foreground.draw();
-  extraForegroundObjects.draw();
-  donna.draw();
-
-  if (isDialogueActive) return;
+    if (isDialogueActive) return;
+  }
+  loop()
 }
 
 animate()
@@ -413,11 +402,9 @@ let isMoving = false;
 let queuedDirection = null;
 let stepProgress = 0;
 let currentFrame = null;
-const TILE_SIZE = 64;
 
 let lastMoveTime = 0;
 let lastDirectionSwitchTime = performance.now();
-
 
 function movePlayer(direction) {
   if (isDialogueActive || isMoving|| window.gameState.freezePerry) return;
@@ -503,66 +490,6 @@ function movePlayer(direction) {
   requestAnimationFrame(stepMove);
 }
 
-function triggerDonnaMovement(targetX, targetY) {
-  console.log("🚴 Donna starts moving towards Perry!");
-
-  // 🚫 Freeze Perry's movement
-  window.gameState.freezePerry = true;
-
-  // 🚲 Move Donna separately
-  moveDonna(targetX, targetY);
-}
-
-function moveDonna(targetX, targetY) {
-  console.log(`🚀 Donna is moving towards Perry at X=${targetX}, Y=${targetY}`);
-
-  const stepSize = 16; // 🚲 Donna moves slightly faster than Perry
-  donna.moving = true;
-
-  function stepMove() {
-    let moveX = 0, moveY = 0;
-
-    // ➡️ Move left or right
-    if (donna.position.x < targetX) {
-      moveX = stepSize;
-      donna.image = donna.sprites.bikeRight;
-    } else if (donna.position.x > targetX) {
-      moveX = -stepSize;
-      donna.image = donna.sprites.bikeLeft;
-    }
-
-    // ⬇️ Move up or down
-    if (donna.position.y < targetY) {
-      moveY = stepSize;
-      donna.image = donna.sprites.bikeDown;
-    } else if (donna.position.y > targetY) {
-      moveY = -stepSize;
-      donna.image = donna.sprites.bikeUp;
-    }
-
-    donna.position.x += moveX;
-    donna.position.y += moveY;
-
-    console.log(`📍 Donna Position: X=${donna.position.x}, Y=${donna.position.y}`);
-
-    // ✅ Check if Donna reached the target
-    if (Math.abs(donna.position.x - targetX) <= stepSize && Math.abs(donna.position.y - targetY) <= stepSize) {
-      donna.position.x = targetX;
-      donna.position.y = targetY;
-      donna.moving = false;
-      console.log("🏁 Donna arrived at Perry's location!");
-
-      // 🎉 Start Donna's dialogue
-      startDonnaDialogue();
-      return;
-    }
-
-    requestAnimationFrame(stepMove);
-  }
-
-  requestAnimationFrame(stepMove);
-}
-
 function startDonnaDialogue() {
   const finalDialogue = [
     "Hi Sir!!! I finally found you!!",
@@ -578,7 +505,7 @@ function startDonnaDialogue() {
   dialogueBox.style.display = "flex";
   document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
 
-  document.addEventListener("keydown", function nextDialogue(event) {
+  function nextDialogue(event) {
     if (event.key === "Enter") {
       dialogueIndex++;
       if (dialogueIndex < finalDialogue.length) {
@@ -587,9 +514,15 @@ function startDonnaDialogue() {
         // 🎉 End dialogue & remove event listener
         document.getElementById("dialogueBox").classList.add("hidden");
         document.removeEventListener("keydown", nextDialogue);
+
+        // ✅ Unfreeze Perry so he can move again
+        window.gameState.freezePerry = false;
+        console.log("✅ Perry can move again!");
       }
     }
-  });
+  }
+
+  document.addEventListener("keydown", nextDialogue);
 }
 
 window.addEventListener("keydown", (e) => {
@@ -668,7 +601,12 @@ window.addEventListener("keydown", (e) => {
     window.gameState.bikeMode = !window.gameState.bikeMode;
     updateMovementSpeed();
     updatePlayerSprite();
+  }
 
+    if (!isMoving) {
+    movePlayer(e.key);
+  } else if (!queuedDirection) {
+    queuedDirection = e.key;
   }
 
 });
@@ -689,3 +627,24 @@ window.addEventListener("keyup", (e) => {
       break;
   }
 });
+
+function handleNpcInteraction(npc) {
+  if (!window.gameState.talkedToNPCs[npc.name]) {
+    window.gameState.talkedToNPCs[npc.name] = true;
+    console.log(`✅ Perry talked to ${npc.name}`);
+
+    if (Object.values(window.gameState.talkedToNPCs).every(Boolean)) {
+      console.log("🎉 All NPCs talked to! Donna will now appear...");
+
+      donna.visible = true;
+
+      // ✅ Ensure boundary is added immediately
+      // addDonnaToBoundaries();
+
+      // ✅ Force an immediate redraw
+      // requestAnimationFrame(animate);
+    }
+  }
+}
+
+

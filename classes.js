@@ -1,9 +1,10 @@
 const MOVEMENT_STEPS = window.MOVEMENT_STEPS || 16;
 
 class Sprite {
-  constructor({ position, velocity, image, frames = {max: 1}, sprites, name}) {
+  constructor({ position, velocity, image, frames = {max: 1}, sprites, name, visible = true}) {
     this.position = position;
     this.image = image
+    this.visible = visible;
     this.frames = {... frames, val: 0, elapsed: 0}
     this.name = name
 
@@ -17,6 +18,8 @@ class Sprite {
   }
 
   draw() {
+    if (!this.visible) return; // ✅ Prevents drawing if not visible
+
     c.drawImage(
       this.image,
       this.frames.val * this.width,
