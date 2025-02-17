@@ -6,18 +6,14 @@ const TILE_SIZE = 64;
 window.gameState = {
   bikeMode: false,
   talkedToNPCs: {},
-  freezePerry: false
+  freezePerry: false,
+  donnaBoundaryAdded: false,
+  boundariesNeedUpdate: false,
 };
 
 function updateMovementSpeed() {
-  console.log(`🚀 updateMovementSpeed() called! Current MOVEMENT_STEPS: ${window.MOVEMENT_STEPS}`);
-
-  // ✅ Ensure MOVEMENT_STEPS is always set properly
   window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
-
-  console.log(`⚡ Speed Updated! New MOVEMENT_STEPS: ${window.MOVEMENT_STEPS}`);
 }
-
 
 function updatePlayerSprite() {
   // ✅ **Ensure lastKey is valid, default to standing "Down"**
@@ -55,7 +51,7 @@ for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, i + 70))
 }
 
-const boundaries = []
+let boundaries = []
 
 collisionsMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
@@ -71,6 +67,7 @@ collisionsMap.forEach((row, i) => {
       }
   })
 })
+
 
 c.fillStyle = "white";
 c.fillRect(0, 0, canvas.width, canvas.height);
@@ -231,11 +228,11 @@ const donna = new Sprite({
 // ];
 
 const npcs = [
-  new Sprite({
-    position: { x: 2688, y: 0 },
-    image: kevinImage,
-    name: "Kevin"
-  }),
+  // new Sprite({
+  //   position: { x: 2688, y: 0 },
+  //   image: kevinImage,
+  //   name: "Kevin"
+  // }),
   new Sprite({
     position: { x: 960, y: 512 },
     image: lucasImage,
@@ -307,7 +304,8 @@ const keys = {
   },
 };
 
-// const npcBoundaries = [];
+let worldOffsetX = offset.x;
+let worldOffsetY = offset.y;
 
 npcs.forEach(npc => {
   boundaries.push(
@@ -322,13 +320,23 @@ npcs.forEach(npc => {
   );
 });
 
+// boundaries.push(
+//   new Boundary({
+//     position: {
+//       x: 2880,
+//       y: 704
+//     },
+//     width: 64,
+//     height: 64
+//   })
+// );
+
 // Initialize all NPCs as "not talked to"
 npcs.forEach(npc => {
   window.gameState.talkedToNPCs[npc.name] = false;
 });
 
-
-const movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, donna]
+let movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, donna]
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
   return (
@@ -352,17 +360,27 @@ function animate() {
     return; // ⛔ Stop extra calls
   }
 
-  let animationCount = 0;
-
   function loop() {
+    // console.log(`📌 Current offset: x=${offset.x}, y=${offset.y}`);
+
     animationCount++;
-    // console.log(`🖌️ animate() called! Frame #${animationCount}`);
 
     window.requestAnimationFrame(loop);
 
+    // ✅ Refresh boundaries *only if needed*
+    if (window.gameState.boundariesNeedUpdate) {
+      refreshBoundaries();
+      window.gameState.boundariesNeedUpdate = false;  // Reset the flag
+    }
+
     background.draw();
     grid.draw();
-    boundaries.forEach((boundary) => boundary.draw());
+    if (donna.visible) {
+      donna.draw();
+      // boundaries.forEach((boundary) => boundary.draw());
+    }
+
+    boundaries.forEach((boundary) => boundary.draw())
 
     // NPC detection and drawing
     let npcNearby = null;
@@ -387,10 +405,6 @@ function animate() {
     foreground.draw();
     extraForegroundObjects.draw();
 
-    if (donna.visible) {
-      donna.draw();
-    }
-
     if (isDialogueActive) return;
   }
   loop()
@@ -413,12 +427,6 @@ function movePlayer(direction) {
   window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
 
   const now = performance.now();
-
-  // Measure switch time
-  if (direction !== lastKey) {
-    const switchTime = Math.round(now - lastDirectionSwitchTime);
-    lastDirectionSwitchTime = now;
-  }
 
   // 🚨 **FORCE INSTANT SWITCHING**
   if (isMoving && direction !== lastKey) {
@@ -445,15 +453,32 @@ function movePlayer(direction) {
     case "d": player.image = window.gameState.bikeMode ? player.sprites.bikeRight : player.sprites.right; moveX = TILE_SIZE; break;
 }
 
+  //   const donnaBoundary = new Boundary({
+  //     position: { x: 2880, y: 704 },
+  //     width: 64,
+  //     height: 64
+  //   });
+  //   boundaries.push(donnaBoundary); // Force reference update
+  //   movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, donna];
+  // }
   // Check for collision
-  let willCollide = boundaries.some(boundary =>
-    rectangularCollision({
-      rectangle1: { position: { x: player.position.x + moveX, y: player.position.y + moveY }, width: player.width, height: player.height },
+  let willCollide = boundaries.some(boundary => {
+
+    const collisionDetected = rectangularCollision({
+      rectangle1: {
+        position: { x: player.position.x + moveX, y: player.position.y + moveY },
+        width: player.width,
+        height: player.height
+      },
       rectangle2: boundary
-    })
-  );
+    });
+
+    return collisionDetected;
+  });
+
 
   if (willCollide) {
+    console.log("🚧 Collision detected! Stopping movement.");
     isMoving = false;
     player.moving = false;
     return;
@@ -472,6 +497,9 @@ function movePlayer(direction) {
         movable.position.x -= stepSizeX;
         movable.position.y -= stepSizeY;
       });
+
+      worldOffsetX -= stepSizeX;
+      worldOffsetY -= stepSizeY;
 
       stepProgress++;
       currentFrame = requestAnimationFrame(stepMove);
@@ -635,16 +663,89 @@ function handleNpcInteraction(npc) {
 
     if (Object.values(window.gameState.talkedToNPCs).every(Boolean)) {
       console.log("🎉 All NPCs talked to! Donna will now appear...");
-
       donna.visible = true;
 
-      // ✅ Ensure boundary is added immediately
-      // addDonnaToBoundaries();
-
-      // ✅ Force an immediate redraw
-      // requestAnimationFrame(animate);
+      if (!window.gameState.donnaBoundaryAdded) {
+        window.gameState.donnaBoundaryAdded = true;
+        window.gameState.boundariesNeedUpdate = true;
+      }
     }
   }
 }
+
+
+// function addDonnaToBoundaries() {
+//   console.log("🛑 Adding Donna's boundary at (2880, 704)");
+
+//   const donnaBoundary = new Boundary({
+//     position: { x: 2880, y: 704 },
+//     width: 64,
+//     height: 64
+//   });
+
+//   boundaries.push(donnaBoundary);
+
+//   console.log("✅ Boundaries updated:", boundaries.length);
+//   console.log("📌 Boundaries array:", boundaries);
+
+//   requestAnimationFrame(animate);
+// }
+
+function refreshBoundaries() {
+  console.log("🔄 Refreshing boundaries...");
+  console.log(`📌 Current world offset: x=${worldOffsetX}, y=${worldOffsetY}`);
+
+  boundaries = [];
+
+  // ✅ Apply worldOffsetX/Y dynamically instead of offset.x/y
+  collisionsMap.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+      if (symbol === 3807) {
+        boundaries.push(
+          new Boundary({
+            position: {
+              x: j * Boundary.width + worldOffsetX,
+              y: i * Boundary.height + worldOffsetY
+            }
+          })
+        );
+      }
+    });
+  });
+
+  // ✅ Add NPC boundaries dynamically (NO offset needed)
+  npcs.forEach(npc => {
+    boundaries.push(new Boundary({
+      position: {
+        x: npc.position.x,
+        y: npc.position.y,
+      },
+      width: 96,
+      height: 96
+    }));
+  });
+
+  // ✅ Add Donna’s boundary *only if she is visible*
+  if (donna.visible) {
+    boundaries.push(new Boundary({
+      position: {
+        x: donna.position.x,
+        y: donna.position.y,
+      },
+      width: 64,
+      height: 64
+    }));
+  }
+
+  // ✅ Update movables to recognize new boundaries
+  movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, donna];
+
+  console.log("✅ Boundaries updated. Total count:", boundaries.length);
+}
+
+
+
+
+
 
 
