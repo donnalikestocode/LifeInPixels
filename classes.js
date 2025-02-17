@@ -35,7 +35,7 @@ class Sprite {
       this.frames.elapsed++
     }
 
-    if (this.frames.elapsed % Math.round(window.gameState.bikeMode ? MOVEMENT_STEPS / 2 : MOVEMENT_STEPS) === 0) {
+    if (this.frames.elapsed % Math.round(window.gameState.bikeMode ? MOVEMENT_STEPS / 4 : MOVEMENT_STEPS/2) === 0) {
       if (this.frames.val < this.frames.max - 1) this.frames.val++
       else this.frames.val = 0
     }

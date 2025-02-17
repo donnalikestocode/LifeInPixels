@@ -6,7 +6,7 @@ window.gameState = {
 };
 
 function updateMovementSpeed() {
-  window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
+  window.MOVEMENT_STEPS = window.gameState.bikeMode ? 32:16; // (32 for bike, 16 for walk)
 
   if (isMoving) {
     isMoving = false;
@@ -14,6 +14,33 @@ function updateMovementSpeed() {
   }
 }
 
+function updatePlayerSprite() {
+  // ✅ **Ensure lastKey is valid, default to standing "Down"**
+  if (!lastKey || !["w", "a", "s", "d"].includes(lastKey)) {
+    lastKey = "s";
+  }
+
+  // Map key inputs to correct sprite names
+  const directionMap = {
+    w: "Up",
+    a: "Left",
+    s: "Down",
+    d: "Right",
+  };
+
+  let spriteKey = directionMap[lastKey] || "Down"; // Default to "Down"
+
+  // ✅ **Ensure correct sprite mode (bike or walk)**
+  let standingSprite = window.gameState.bikeMode
+    ? player.sprites[`bike${spriteKey}`] // 🚲 Use bike sprite if biking
+    : player.sprites[spriteKey.toLowerCase()]; // 🚶 Use walking sprite if walking
+
+  if (standingSprite) {
+    player.image = standingSprite; // ✅ Instantly update the player's sprite
+  } else {
+    console.error(`🚨 Missing sprite for lastKey: ${lastKey} (mapped: ${spriteKey})`); // Debugging
+  }
+}
 
 
 canvas.width = 1024;
@@ -267,7 +294,7 @@ let lastKey = "";
 function animate() {
   window.requestAnimationFrame(animate);
   background.draw();
-  // grid.draw();
+  grid.draw();
   boundaries.forEach((boundary) => boundary.draw());
 
   // NPC detection and drawing
@@ -379,10 +406,6 @@ function movePlayer(direction) {
       currentFrame = requestAnimationFrame(stepMove);
     } else {
 
-      let movementEndTime = performance.now(); // Track end time
-      let movementDuration = (movementEndTime - movementStartTime) / 1000; // Convert to seconds
-      let speed = 1 / movementDuration; // Steps per second
-
       isMoving = false;
       player.moving = false;
 
@@ -399,6 +422,13 @@ function movePlayer(direction) {
 window.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     if (activeNpc && !isDialogueActive) {
+
+      if (window.gameState.bikeMode) {
+        window.gameState.bikeMode = false;
+        updateMovementSpeed();
+        updatePlayerSprite();  // 🔄 Instantly switch back to walking sprite
+      }
+
       const dialogueBox = document.getElementById("dialogueBox");
 
       dialogueBox.classList.remove("hidden");
@@ -415,6 +445,7 @@ window.addEventListener("keydown", (e) => {
 
       document.getElementById("dialogueText").innerText =
         npcDialogues[npcName][dialogueIndex];
+
     } else if (isDialogueActive) {
       dialogueIndex++;
 
@@ -437,6 +468,19 @@ window.addEventListener("keydown", (e) => {
 
   if (isDialogueActive) return; // ⛔ Block movement during dialogue
 
+  if (e.key === "b") {
+
+    if (isMoving) {
+      console.log("🚫 Can't switch to bike mode while moving!");
+      return; // Ignore if player is moving
+    }
+
+    window.gameState.bikeMode = !window.gameState.bikeMode;
+    updateMovementSpeed();
+    updatePlayerSprite(); // 🔄 Instantly switch to correct standing frame
+    return;
+  }
+
   // Movement Handling
   if (isMoving) {
     if (!queuedDirection) queuedDirection = e.key;  // ✅ **Queue only if empty**
@@ -448,6 +492,7 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "b") {
     window.gameState.bikeMode = !window.gameState.bikeMode;
     updateMovementSpeed();
+    updatePlayerSprite();
 
   }
 
