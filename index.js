@@ -2,7 +2,8 @@ const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
 window.gameState = {
-  bikeMode: false
+  bikeMode: false,
+  talkedToNPCs: {} // ✅ Track NPCs Perry has talked to
 };
 
 function updateMovementSpeed() {
@@ -11,6 +12,19 @@ function updateMovementSpeed() {
   if (isMoving) {
     isMoving = false;
     movePlayer(lastKey);  // 🚀 Apply the new speed instantly
+  }
+}
+
+function handleNpcInteraction(npc) {
+  if (!window.gameState.talkedToNPCs[npc.name]) {
+    window.gameState.talkedToNPCs[npc.name] = true;
+    console.log(`✅ Perry talked to ${npc.name}`);
+
+    // Check if Perry has talked to all NPCs
+    if (Object.values(window.gameState.talkedToNPCs).every(Boolean)) {
+      console.log("🎉 All NPCs talked to! Triggering Donna's movement...");
+      // triggerDonnaMovement();
+    }
   }
 }
 
@@ -276,6 +290,12 @@ npcs.forEach(npc => {
   );
 });
 
+// Initialize all NPCs as "not talked to"
+npcs.forEach(npc => {
+  window.gameState.talkedToNPCs[npc.name] = false;
+});
+
+
 const movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs]
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
@@ -428,6 +448,8 @@ window.addEventListener("keydown", (e) => {
         updateMovementSpeed();
         updatePlayerSprite();  // 🔄 Instantly switch back to walking sprite
       }
+
+      handleNpcInteraction(activeNpc);
 
       const dialogueBox = document.getElementById("dialogueBox");
 
