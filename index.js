@@ -1,7 +1,25 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
-window.MOVEMENT_STEPS = 16;
+window.gameState = {
+  bikeMode: false
+};
+
+function updateMovementSpeed() {
+  window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
+  console.log(
+    window.gameState.bikeMode
+      ? "🚲 Biking Mode Activated! Speed should increase."
+      : "🚶 Walking Mode Activated! Speed should decrease."
+  );
+
+  if (isMoving) {
+    isMoving = false;
+    movePlayer(lastKey);  // 🚀 Apply the new speed instantly
+  }
+}
+
+
 
 canvas.width = 1024;
 canvas.height = 576;
@@ -52,6 +70,18 @@ playerLeftImage.src = "./img/Perry_playerLeft.png";
 const playerRightImage = new Image();
 playerRightImage.src = "./img/Perry_playerRight.png";
 
+const playerBikeUpImage = new Image();
+playerBikeUpImage.src = "./img/Bike/Perry_bikeUp.png";
+
+const playerBikeDownImage = new Image();
+  playerBikeDownImage.src = "./img/Bike/Perry_bikeDown.png";
+
+const playerBikeLeftImage = new Image();
+playerBikeLeftImage.src = "./img/Bike/Perry_bikeLeft.png";
+
+const playerBikeRightImage = new Image();
+playerBikeRightImage.src = "./img/Bike/Perry_bikeRight.png";
+
 const kevinImage = new Image();
 kevinImage.src = "./img/NPCs/Kevin.png";
 
@@ -86,7 +116,11 @@ const player = new Sprite({
     up: playerUpImage,
     down: playerDownImage,
     left: playerLeftImage,
-    right: playerRightImage
+    right: playerRightImage,
+    bikeUp: playerBikeUpImage,
+    bikeDown: playerBikeDownImage,
+    bikeLeft: playerBikeLeftImage,
+    bikeRight: playerBikeRightImage,
   }
 })
 
@@ -283,6 +317,9 @@ let lastDirectionSwitchTime = performance.now();
 function movePlayer(direction) {
   if (isDialogueActive || isMoving) return;
 
+  // 🔄 Update movement speed based on bike mode dynamically
+  window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
+
   const now = performance.now();
   // console.log(`🎯 Key Pressed: ${direction}, LastKey: ${lastKey}, IsMoving: ${isMoving}`);
 
@@ -313,11 +350,11 @@ function movePlayer(direction) {
 
   let moveX = 0, moveY = 0;
   switch (direction) {
-    case "w": player.image = player.sprites.up; moveY = -TILE_SIZE; break;
-    case "a": player.image = player.sprites.left; moveX = -TILE_SIZE; break;
-    case "s": player.image = player.sprites.down; moveY = TILE_SIZE; break;
-    case "d": player.image = player.sprites.right; moveX = TILE_SIZE; break;
-  }
+    case "w": player.image = window.gameState.bikeMode ? player.sprites.bikeUp : player.sprites.up; moveY = -TILE_SIZE; break;
+    case "a": player.image = window.gameState.bikeMode ? player.sprites.bikeLeft : player.sprites.left; moveX = -TILE_SIZE; break;
+    case "s": player.image = window.gameState.bikeMode ? player.sprites.bikeDown : player.sprites.down; moveY = TILE_SIZE; break;
+    case "d": player.image = window.gameState.bikeMode ? player.sprites.bikeRight : player.sprites.right; moveX = TILE_SIZE; break;
+}
 
   // Check for collision
   let willCollide = boundaries.some(boundary =>
@@ -335,10 +372,11 @@ function movePlayer(direction) {
   }
 
   // **Reduce movement steps to make direction switching feel instant**
-  let adjustedSteps = MOVEMENT_STEPS;
+  let adjustedSteps = window.MOVEMENT_STEPS;
   let stepSizeX = moveX / adjustedSteps;
   let stepSizeY = moveY / adjustedSteps;
 
+  let movementStartTime = performance.now(); // Track start time
 
   function stepMove() {
     if (stepProgress < adjustedSteps) {
@@ -350,7 +388,16 @@ function movePlayer(direction) {
       stepProgress++;
       currentFrame = requestAnimationFrame(stepMove);
     } else {
-      // console.log(`✅ Move complete.`);
+
+      let movementEndTime = performance.now(); // Track end time
+      let movementDuration = (movementEndTime - movementStartTime) / 1000; // Convert to seconds
+      let speed = 1 / movementDuration; // Steps per second
+
+      console.log(
+        window.gameState.bikeMode
+          ? `🚲 Bike Speed: ${speed.toFixed(2)} steps/sec`
+          : `🚶 Walking Speed: ${speed.toFixed(2)} steps/sec`
+      );
 
       isMoving = false;
       player.moving = false;
@@ -362,6 +409,7 @@ function movePlayer(direction) {
       }
     }
   }
+  console.log(`🚀 MOVEMENT_STEPS is now: ${window.MOVEMENT_STEPS}`);
 
   requestAnimationFrame(stepMove);
 }
@@ -414,6 +462,18 @@ window.addEventListener("keydown", (e) => {
   }
 
   movePlayer(e.key);
+
+  if (e.key === "b") {
+    window.gameState.bikeMode = !window.gameState.bikeMode;
+    updateMovementSpeed();
+
+    console.log(
+      window.gameState.bikeMode
+        ? "🚲 Biking Mode Activated! Speed should increase."
+        : "🚶 Walking Mode Activated! Speed should decrease."
+    );
+  }
+
 });
 
 window.addEventListener("keyup", (e) => {
