@@ -3,7 +3,8 @@ const c = canvas.getContext("2d");
 
 window.gameState = {
   bikeMode: false,
-  talkedToNPCs: {} // ✅ Track NPCs Perry has talked to
+  talkedToNPCs: {},
+  freezePerry: false
 };
 
 function updateMovementSpeed() {
@@ -20,10 +21,26 @@ function handleNpcInteraction(npc) {
     window.gameState.talkedToNPCs[npc.name] = true;
     console.log(`✅ Perry talked to ${npc.name}`);
 
-    // Check if Perry has talked to all NPCs
+    // Check if Perry has talked to ALL NPCs
     if (Object.values(window.gameState.talkedToNPCs).every(Boolean)) {
-      console.log("🎉 All NPCs talked to! Triggering Donna's movement...");
-      // triggerDonnaMovement();
+      console.log("🎉 All NPCs talked to! Donna will move soon...");
+
+      // 🕒 Add a delay before Donna starts moving
+      setTimeout(() => {
+        console.log("📍 Capturing Perry's final location...");
+
+        // **Freeze Perry's movement**
+        isMoving = false;
+        window.gameState.freezePerry = true; // 🚫 Perry can't move now
+
+        const targetX = player.position.x;
+        const targetY = player.position.y - TILE_SIZE; // Stop 1 tile above Perry
+
+        console.log(`🚀 Donna will start moving to: X=${targetX}, Y=${targetY}`);
+
+        // Now trigger Donna’s movement
+        triggerDonnaMovement(targetX, targetY);
+      }, 7000); // ⏳ 3-second delay before Donna moves
     }
   }
 }
@@ -118,6 +135,30 @@ playerBikeLeftImage.src = "./img/Bike/Perry_bikeLeft.png";
 const playerBikeRightImage = new Image();
 playerBikeRightImage.src = "./img/Bike/Perry_bikeRight.png";
 
+const donnaUpImage = new Image();
+donnaUpImage.src = "./img/Donna/Donna_up.png";
+
+const donnaDownImage = new Image();
+donnaDownImage.src = "./img/Donna/Donna_down.png";
+
+const donnaLeftImage = new Image();
+donnaLeftImage.src = "./img/Donna/Donna_left.png";
+
+const donnaRightImage = new Image();
+donnaRightImage.src = "./img/Donna/Donna_right.png";
+
+const donnaBikeUpImage = new Image();
+donnaBikeUpImage.src = "./img/Donna/Donna_bikeUp.png";
+
+const donnaBikeDownImage = new Image();
+donnaBikeDownImage.src = "./img/Donna/Donna_bikeDown.png";
+
+const donnaBikeLeftImage = new Image();
+donnaBikeLeftImage.src = "./img/Donna/Donna_bikeLeft.png";
+
+const donnaBikeRightImage = new Image();
+donnaBikeRightImage.src = "./img/Donna/Donna_bikeRight.png";
+
 const kevinImage = new Image();
 kevinImage.src = "./img/NPCs/Kevin.png";
 
@@ -160,6 +201,28 @@ const player = new Sprite({
   }
 })
 
+const donna = new Sprite({
+  position: {
+    x: 500,
+    y: 100,
+  },
+  image: donnaDownImage,
+  name: "Donna",
+  frames: {
+    max: 4
+  },
+  sprites: {
+    up: donnaUpImage,
+    down: donnaDownImage,
+    left: donnaLeftImage,
+    right: donnaRightImage,
+    bikeUp: donnaBikeUpImage,
+    bikeDown: donnaBikeDownImage,
+    bikeLeft: donnaBikeLeftImage,
+    bikeRight: donnaBikeRightImage,
+  }
+});
+
 // const npcs = [
 //   new Sprite({
 //     position: { x: 2700, y: 20 },
@@ -199,41 +262,41 @@ const player = new Sprite({
 // ];
 
 const npcs = [
-  new Sprite({
-    position: { x: 2688, y: 0 },
-    image: kevinImage,
-    name: "Kevin"
-  }),
+  // new Sprite({
+  //   position: { x: 2688, y: 0 },
+  //   image: kevinImage,
+  //   name: "Kevin"
+  // }),
   new Sprite({
     position: { x: 960, y: 512 },
     image: lucasImage,
     name: "Lucas"
   }),
-  new Sprite({
-    position: { x: 512, y: 896 },
-    image: gioImage,
-    name: "Gio"
-  }),
-  new Sprite({
-    position: { x: 1280, y: 768 },
-    image: connieImage,
-    name: "Connie"
-  }),
-  new Sprite({
-    position: {x: 2560, y: 704 },
-    image: davidImage,
-    name: "David"
-  }),
-  new Sprite({
-    position: { x: 1600, y: 1344 },
-    image: meganImage,
-    name: "Megan"
-  }),
-  new Sprite({
-    position: { x: 1408, y: 128 },
-    image: quynhImage,
-    name: "Quynh"
-  }),
+  // new Sprite({
+  //   position: { x: 512, y: 896 },
+  //   image: gioImage,
+  //   name: "Gio"
+  // }),
+  // new Sprite({
+  //   position: { x: 1280, y: 768 },
+  //   image: connieImage,
+  //   name: "Connie"
+  // }),
+  // new Sprite({
+  //   position: {x: 2560, y: 704 },
+  //   image: davidImage,
+  //   name: "David"
+  // }),
+  // new Sprite({
+  //   position: { x: 1600, y: 1344 },
+  //   image: meganImage,
+  //   name: "Megan"
+  // }),
+  // new Sprite({
+  //   position: { x: 1408, y: 128 },
+  //   image: quynhImage,
+  //   name: "Quynh"
+  // }),
 ];
 
 const background = new Sprite({
@@ -296,7 +359,7 @@ npcs.forEach(npc => {
 });
 
 
-const movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs]
+const movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, donna]
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
   return (
@@ -339,6 +402,7 @@ function animate() {
   player.draw();
   foreground.draw();
   extraForegroundObjects.draw();
+  donna.draw();
 
   if (isDialogueActive) return;
 }
@@ -356,7 +420,7 @@ let lastDirectionSwitchTime = performance.now();
 
 
 function movePlayer(direction) {
-  if (isDialogueActive || isMoving) return;
+  if (isDialogueActive || isMoving|| window.gameState.freezePerry) return;
 
   // 🔄 Update movement speed based on bike mode dynamically
   window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
@@ -437,6 +501,95 @@ function movePlayer(direction) {
   }
 
   requestAnimationFrame(stepMove);
+}
+
+function triggerDonnaMovement(targetX, targetY) {
+  console.log("🚴 Donna starts moving towards Perry!");
+
+  // 🚫 Freeze Perry's movement
+  window.gameState.freezePerry = true;
+
+  // 🚲 Move Donna separately
+  moveDonna(targetX, targetY);
+}
+
+function moveDonna(targetX, targetY) {
+  console.log(`🚀 Donna is moving towards Perry at X=${targetX}, Y=${targetY}`);
+
+  const stepSize = 16; // 🚲 Donna moves slightly faster than Perry
+  donna.moving = true;
+
+  function stepMove() {
+    let moveX = 0, moveY = 0;
+
+    // ➡️ Move left or right
+    if (donna.position.x < targetX) {
+      moveX = stepSize;
+      donna.image = donna.sprites.bikeRight;
+    } else if (donna.position.x > targetX) {
+      moveX = -stepSize;
+      donna.image = donna.sprites.bikeLeft;
+    }
+
+    // ⬇️ Move up or down
+    if (donna.position.y < targetY) {
+      moveY = stepSize;
+      donna.image = donna.sprites.bikeDown;
+    } else if (donna.position.y > targetY) {
+      moveY = -stepSize;
+      donna.image = donna.sprites.bikeUp;
+    }
+
+    donna.position.x += moveX;
+    donna.position.y += moveY;
+
+    console.log(`📍 Donna Position: X=${donna.position.x}, Y=${donna.position.y}`);
+
+    // ✅ Check if Donna reached the target
+    if (Math.abs(donna.position.x - targetX) <= stepSize && Math.abs(donna.position.y - targetY) <= stepSize) {
+      donna.position.x = targetX;
+      donna.position.y = targetY;
+      donna.moving = false;
+      console.log("🏁 Donna arrived at Perry's location!");
+
+      // 🎉 Start Donna's dialogue
+      startDonnaDialogue();
+      return;
+    }
+
+    requestAnimationFrame(stepMove);
+  }
+
+  requestAnimationFrame(stepMove);
+}
+
+function startDonnaDialogue() {
+  const finalDialogue = [
+    "Hi Sir!!! I finally found you!!",
+    "I just want to thank you for being my best friend. :3",
+    "How’d I get so lucky? I didn’t catch them all, but I caught the only one that matters to me.",
+    "Wherever life takes us, I’m happy to walk (or bike) this journey alongside you.",
+    "Will you be my valentine and continue to explore together side by side? ♥️"
+  ];
+
+  let dialogueIndex = 0;
+  const dialogueBox = document.getElementById("dialogueBox");
+  dialogueBox.classList.remove("hidden");
+  dialogueBox.style.display = "flex";
+  document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
+
+  document.addEventListener("keydown", function nextDialogue(event) {
+    if (event.key === "Enter") {
+      dialogueIndex++;
+      if (dialogueIndex < finalDialogue.length) {
+        document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
+      } else {
+        // 🎉 End dialogue & remove event listener
+        document.getElementById("dialogueBox").classList.add("hidden");
+        document.removeEventListener("keydown", nextDialogue);
+      }
+    }
+  });
 }
 
 window.addEventListener("keydown", (e) => {
