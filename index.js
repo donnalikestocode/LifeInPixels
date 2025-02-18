@@ -12,6 +12,7 @@ window.gameState = {
   donnaBoundaryAdded: false,
   boundariesNeedUpdate: false,
   donnaCooldown: false,
+  donnaFollowing: false,
 };
 
 function updateMovementSpeed() {
@@ -360,6 +361,8 @@ let isMoving = false;
 let queuedDirection = null;
 let stepProgress = 0;
 let currentFrame = null;
+let perryPreviousPositions = []; // Stores Perry’s past positions
+const MAX_TRACKED_POSITIONS = 6; // Keep up to 5 steps
 
 let lastMoveTime = 0;
 let lastDirectionSwitchTime = performance.now();
@@ -369,8 +372,6 @@ function movePlayer(direction) {
 
   // 🔄 Update movement speed based on bike mode dynamically
   window.MOVEMENT_STEPS = window.gameState.bikeMode ? 8 : 16;
-
-  const now = performance.now();
 
   // 🚨 **FORCE INSTANT SWITCHING**
   if (isMoving && direction !== lastKey) {
@@ -419,12 +420,18 @@ function movePlayer(direction) {
     return;
   }
 
+  // ✅ Store Perry’s last position before moving
+  perryPreviousPositions.unshift({ x: player.position.x, y: player.position.y });
+
+  // ✅ Keep position history limited to prevent lag
+  if (perryPreviousPositions.length > MAX_TRACKED_POSITIONS) {
+    perryPreviousPositions.pop();
+  }
+
   // **Reduce movement steps to make direction switching feel instant**
   let adjustedSteps = window.MOVEMENT_STEPS;
   let stepSizeX = moveX / adjustedSteps;
   let stepSizeY = moveY / adjustedSteps;
-
-  let movementStartTime = performance.now(); // Track start time
 
   function stepMove() {
     if (stepProgress < adjustedSteps) {
@@ -437,16 +444,24 @@ function movePlayer(direction) {
       worldOffsetY -= stepSizeY;
 
       stepProgress++;
+
       currentFrame = requestAnimationFrame(stepMove);
     } else {
 
       isMoving = false;
       player.moving = false;
 
+      // ✅ Only update Donna's position **after Perry has fully moved**
+      if (window.gameState.donnaFollowing) {
+        updateDonnaPosition();
+      }
+
+
       if (queuedDirection) {
         movePlayer(queuedDirection);
         queuedDirection = null;
       }
+
     }
   }
 
@@ -573,13 +588,20 @@ function advanceDialogue(event) {
       window.gameState.freezePerry = false; // ✅ Unfreeze Perry
 
       // ✅ If Donna's dialogue just ended, WAIT before restarting her movement
-      if (currentDialogue === npcDialogues["Donna"]) {
-        console.log("⏳ Waiting before restarting Donna's movement...");
-        setTimeout(() => {
-          console.log("🔄 Restarting Donna's movement...");
-          window.gameState.donnaCooldown = false; // Remove cooldown
-          moveDonna();
-        }, 2000); // 🕒 2-second delay before restarting movement
+      // if (currentDialogue === npcDialogues["Donna"]) {
+      //   console.log("⏳ Waiting before restarting Donna's movement...");
+      //   setTimeout(() => {
+      //     console.log("🔄 Restarting Donna's movement...");
+      //     window.gameState.donnaCooldown = false; // Remove cooldown
+      //     moveDonna();
+      //     window.gameState.donnaFollowing = true;
+      //   }, 200); // 🕒 2-second delay before restarting movement
+      // }
+
+       // ✅ If Donna’s dialogue just ended, she should start following Perry
+       if (currentDialogue === npcDialogues["Donna"]) {
+        console.log("✨ Donna is now following Perry!");
+        window.gameState.donnaFollowing = true; // 🔄 Start following after dialogue
       }
 
       dialogueIndex = 0;
@@ -759,6 +781,44 @@ function drawDonna() {
     donna.height
   );
 }
+
+function updateDonnaPosition() {
+  if (!window.gameState.donnaFollowing || perryPreviousPositions.length < 3) return;
+
+  console.log("🔄 Donna is trying to follow Perry!", perryPreviousPositions);
+  const previousStep = perryPreviousPositions[1]; // Perry's 3-steps-ago position
+
+  if (!previousStep) return;
+
+  let moveX = previousStep.x - donna.position.x;
+  let moveY = previousStep.y - donna.position.y;
+
+  // Move one axis at a time (X first, then Y)
+  if (Math.abs(moveX) > 0) {
+    donna.position.x += Math.sign(moveX) * TILE_SIZE / 2;
+  } else if (Math.abs(moveY) > 0) {
+    donna.position.y += Math.sign(moveY) * TILE_SIZE / 2;
+  }
+
+  // 🎨 **Update Donna's sprite based on Perry's movement**
+  if (window.gameState.bikeMode) {
+    if (lastKey === "w") donna.currentSprite = donnaBikeUpImage;
+    else if (lastKey === "a") donna.currentSprite = donnaBikeLeftImage;
+    else if (lastKey === "s") donna.currentSprite = donnaBikeDownImage;
+    else if (lastKey === "d") donna.currentSprite = donnaBikeRightImage;
+  } else {
+    if (lastKey === "w") donna.currentSprite = donnaUpImage;
+    else if (lastKey === "a") donna.currentSprite = donnaLeftImage;
+    else if (lastKey === "s") donna.currentSprite = donnaDownImage;
+    else if (lastKey === "d") donna.currentSprite = donnaRightImage;
+  }
+
+  console.log(`✨ Donna moved to: X=${donna.position.x}, Y=${donna.position.y}, Sprite: ${donna.currentSprite.src}`);
+}
+
+
+
+
 
 
 
