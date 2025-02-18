@@ -737,7 +737,7 @@ function moveDonna() {
       stepProgress += moveAmount;
 
       donna.frameCounter++;
-      if (donna.frameCounter % 1 === 0) {
+      if (donna.frameCounter % 4 === 0) {
         donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
       }
 
@@ -816,6 +816,42 @@ function drawDonna() {
 
 //   console.log(`✨ Donna moved to: X=${donna.position.x}, Y=${donna.position.y}, Sprite: ${donna.currentSprite.src}`);
 // }
+function smoothMoveDonna(targetX, targetY) {
+  if (donna.moving) return; // Prevent duplicate movement
+
+  donna.moving = true; // Lock movement until finished
+
+  let startX = donna.position.x;
+  let startY = donna.position.y;
+  let distanceX = targetX - startX;
+  let distanceY = targetY - startY;
+  let steps = 8; // Adjust for smoothness (higher = slower, lower = faster)
+  let stepX = distanceX / steps;
+  let stepY = distanceY / steps;
+  let stepCount = 0;
+
+  function step() {
+    if (stepCount < steps) {
+      donna.position.x += stepX;
+      donna.position.y += stepY;
+      stepCount++;
+
+      // 🎨 **Update Animation Frames**
+      if (stepCount % 2 === 0) { // Adjust animation speed
+        donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
+      }
+
+      requestAnimationFrame(step);
+    } else {
+      // 🎯 Snap to the exact grid to prevent drifting
+      donna.position.x = targetX;
+      donna.position.y = targetY;
+      donna.moving = false; // Unlock movement
+    }
+  }
+
+  requestAnimationFrame(step);
+}
 
 function updateDonnaPositionBasedOnKey(key) {
   if (!window.gameState.donnaFollowing) return;
@@ -868,7 +904,7 @@ function updateDonnaPositionBasedOnKey(key) {
   // 🎨 **Animate Donna's Frames**
   donna.frameCounter++;
 
-  if (donna.frameCounter % 4 === 0) { // Adjust 10 for animation speed
+  if (donna.frameCounter % 1 === 0) { // Adjust 10 for animation speed
     donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
   }
 
@@ -892,10 +928,9 @@ function updateDonnaPositionBasedOnKey(key) {
 // ✅ Hook into Perry’s movement function
 window.addEventListener("keydown", (e) => {
   if (!["w", "a", "s", "d"].includes(e.key)) return;
-  updateDonnaPositionBasedOnKey(e.key);
+
+  setTimeout(() => updateDonnaPositionBasedOnKey(e.key), 1000);
 });
-
-
 
 
 
