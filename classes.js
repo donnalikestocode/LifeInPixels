@@ -59,7 +59,7 @@ class Boundary {
   }
 
   draw() {
-    c.fillStyle = "rgba(255, 0, 0, 0.5)";
+    c.fillStyle = "rgba(255, 0, 0, 0.0)";
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 }
@@ -69,6 +69,44 @@ const offset = {
   y: Math.floor(-1070 / 64) * 64
 };
 
+// class Person {
+//   constructor(config) {
+//     this.position = config.position;
+//     this.sprite = config.sprite;
+//     this.direction = "down"; // Default direction
+//     this.movingProgressRemaining = 0;
+//     this.speed = 4; // Movement speed per frame
+//   }
+
+//   startWalking(direction) {
+//     if (this.movingProgressRemaining > 0) return; // Already moving
+
+//     // Move up/down by one grid (64px)
+//     if (direction === "up") this.position.y -= 64;
+//     if (direction === "down") this.position.y += 64;
+
+//     this.movingProgressRemaining = 64;
+//     this.direction = direction;
+//   }
+
+//   updatePosition() {
+//     if (this.movingProgressRemaining > 0) {
+//       if (this.direction === "up") this.position.y -= this.speed;
+//       if (this.direction === "down") this.position.y += this.speed;
+//       this.movingProgressRemaining -= this.speed;
+//     }
+//   }
+
+//   updateSprite() {
+//     this.sprite = this.movingProgressRemaining > 0
+//       ? donna.sprites["walk-" + this.direction]
+//       : donna.sprites["idle-" + this.direction];
+//   }
+
+//   draw() {
+//     c.drawImage(this.sprite, this.position.x, this.position.y);
+//   }
+// }
 
 class Grid {
   constructor() {

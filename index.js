@@ -167,26 +167,27 @@ const player = new Sprite({
     bikeDown: playerBikeDownImage,
     bikeLeft: playerBikeLeftImage,
     bikeRight: playerBikeRightImage,
-  }
+  },
+  name:"Perry"
 })
 
-const donna = new Sprite({
-  position: { x: 2880, y: 704},
-  image: donnaDownImage,
-  name: "Donna",
-  frames: { max: 4 },
-  sprites: {
-    up: donnaUpImage,
-    down: donnaDownImage,
-    left: donnaLeftImage,
-    right: donnaRightImage,
-    bikeUp: donnaBikeUpImage,
-    bikeDown: donnaBikeDownImage,
-    bikeLeft: donnaBikeLeftImage,
-    bikeRight: donnaBikeRightImage,
-  },
-  visible: false,
-});
+// const donna = new Sprite({
+//   position: { x: 2880, y: 704},
+//   image: donnaDownImage,
+//   name: "Donna",
+//   frames: { max: 4 },
+//   sprites: {
+//     up: donnaUpImage,
+//     down: donnaDownImage,
+//     left: donnaLeftImage,
+//     right: donnaRightImage,
+//     bikeUp: donnaBikeUpImage,
+//     bikeDown: donnaBikeDownImage,
+//     bikeLeft: donnaBikeLeftImage,
+//     bikeRight: donnaBikeRightImage,
+//   },
+//   visible: false,
+// });
 //   new Sprite({
 //     position: { x: 2700, y: 20 },
 //     image: kevinImage,
@@ -223,6 +224,19 @@ const donna = new Sprite({
 //     name: "Quynh"
 //   }),
 // ];
+
+const donna = {
+  position: { x: 2880, y: 704 }, // Start position
+  width: 64, // Adjust if needed
+  height: 64,
+  direction: -1, // -1 = up, 1 = down
+  moving: false,
+  currentSprite: donnaDownImage,
+  frameIndex: 0, // Track animation frame
+  frameCounter: 0, // Slow down animation speed
+  maxFrames: 4, // Total frames in sprite sheet
+  visible: false,
+};
 
 const npcs = [
   // new Sprite({
@@ -304,6 +318,25 @@ const keys = {
 let worldOffsetX = offset.x;
 let worldOffsetY = offset.y;
 
+// const donnaCharacter = new Person({
+//   position: { x: 2880, y: 704 },
+//   sprite: donnaDownImage,
+// });
+
+// // 🚀 Move Donna up and down continuously
+// function animateDonna() {
+//   if (donnaCharacter.movingProgressRemaining === 0) {
+//     // Switch direction every time she completes a movement
+//     donnaCharacter.startWalking(donnaCharacter.direction === "up" ? "down" : "up");
+//   }
+
+//   donnaCharacter.updatePosition();
+//   donnaCharacter.updateSprite();
+//   refreshBoundaries();
+
+//   requestAnimationFrame(animateDonna);
+// }
+
 npcs.forEach(npc => {
   boundaries.push(
     new Boundary({
@@ -358,7 +391,7 @@ function animate() {
     background.draw();
     grid.draw();
     if (donna.visible) {
-      donna.draw();
+      drawDonna();
     }
 
     boundaries.forEach((boundary) => boundary.draw())
@@ -617,7 +650,9 @@ function handleNpcInteraction(npc) {
       if (!window.gameState.donnaBoundaryAdded) {
         window.gameState.donnaBoundaryAdded = true;
         window.gameState.boundariesNeedUpdate = true;
+        // moveDonna();
       }
+      moveDonna();
 
       // ⏳ Wait 7 seconds, then trigger Perry's realization
       setTimeout(() => {
@@ -648,7 +683,6 @@ function advanceDialogue(event) {
   }
 }
 
-
 function startDialogue(npcName) {
   if (!npcDialogues[npcName]) return;
 
@@ -669,8 +703,8 @@ function startDialogue(npcName) {
 }
 
 function refreshBoundaries() {
-  console.log("🔄 Refreshing boundaries...");
-  console.log(`📌 Current world offset: x=${worldOffsetX}, y=${worldOffsetY}`);
+  // console.log("🔄 Refreshing boundaries...");
+  // console.log(`📌 Current world offset: x=${worldOffsetX}, y=${worldOffsetY}`);
 
   boundaries = [];
 
@@ -717,8 +751,77 @@ function refreshBoundaries() {
   // ✅ Update movables to recognize new boundaries
   movables = [background, ...boundaries, foreground, extraForegroundObjects, ...npcs, donna];
 
-  console.log("✅ Boundaries updated. Total count:", boundaries.length);
+  // console.log("✅ Boundaries updated. Total count:", boundaries.length);
 }
+
+function moveDonna() {
+  if (!donna.visible) return; // Only move if she has appeared
+
+  console.log("🚀 Moving Donna...");
+
+  const moveAmount = TILE_SIZE / window.MOVEMENT_STEPS; // Match player's step size
+  let stepProgress = 0;
+  const maxSteps = TILE_SIZE * 3; // Move exactly 3 tiles (192 pixels)
+
+  const interval = setInterval(() => {
+    if (stepProgress >= maxSteps) {
+      donna.direction *= -1; // Switch direction
+      stepProgress = 0;
+    }
+
+    let nextY = donna.position.y - moveAmount * donna.direction;
+
+    // 🛑 Collision check with Perry
+    let willCollideWithPerry = rectangularCollision({
+      rectangle1: { position: { x: donna.position.x, y: nextY }, width: donna.width, height: donna.height },
+      rectangle2: { position: player.position, width: player.width, height: player.height }
+    });
+
+    if (!willCollideWithPerry) {
+      donna.position.y = nextY;
+      stepProgress += moveAmount;
+
+      // ✅ Update sprite every 6 movements to slow animation
+      donna.frameCounter++;
+      if (donna.frameCounter % 1 === 0) { // Adjust this number for slower animation
+        donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
+      }
+
+      // Swap sprite based on direction
+      donna.currentSprite = donna.direction === -1 ? donnaDownImage : donnaUpImage;
+
+      // 🔄 **Refresh boundaries to match new position**
+      refreshBoundaries();
+
+    } else {
+      console.log("🚫 Donna stopped! Perry is in front of her.");
+    }
+
+  }, 150); // 🔄 Adjust timing for slower movement
+}
+
+function drawDonna() {
+  if (!donna.visible) return;
+
+  c.drawImage(
+    donna.currentSprite,
+    donna.frameIndex * donna.width, // Offset to get the correct frame
+    0,
+    donna.width,
+    donna.height,
+    donna.position.x,
+    donna.position.y,
+    donna.width,
+    donna.height
+  );
+}
+
+
+
+
+
+
+
 
 
 
