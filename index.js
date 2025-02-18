@@ -591,6 +591,10 @@ function advanceDialogue(event) {
 function startDialogue(npcName) {
   if (!npcDialogues[npcName]) return;
 
+  if (npcName === "Donna") {
+    faceEachOtherBeforeDialogue(); // Donna turns to face Perry
+  }
+
   dialogueIndex = 0;
   isDialogueActive = true;
   window.gameState.freezePerry = true; // ⛔ Freeze movement
@@ -723,6 +727,22 @@ function moveDonna() {
   }, 150);
 }
 
+function faceEachOtherBeforeDialogue() {
+  // Determine Perry's direction to face Donna
+  if (player.position.x < donna.position.x) {
+    player.image = player.sprites.right; // Perry faces right
+    donna.currentSprite = donnaLeftImage; // Donna faces left
+  } else if (player.position.x > donna.position.x) {
+    player.image = player.sprites.left; // Perry faces left
+    donna.currentSprite = donnaRightImage; // Donna faces right
+  } else if (player.position.y < donna.position.y) {
+    player.image = player.sprites.down; // Perry faces down
+    donna.currentSprite = donnaUpImage; // Donna faces up
+  } else if (player.position.y > donna.position.y) {
+    player.image = player.sprites.up; // Perry faces up
+    donna.currentSprite = donnaDownImage; // Donna faces down
+  }
+}
 
 function drawDonna() {
   if (!donna.visible) return;
