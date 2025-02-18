@@ -451,10 +451,11 @@ function movePlayer(direction) {
       isMoving = false;
       player.moving = false;
 
-      // ✅ Only update Donna's position **after Perry has fully moved**
-      if (window.gameState.donnaFollowing) {
-        updateDonnaPositionBasedOnKey();
-      }
+    // ✅ Only update Donna's position **after Perry has fully moved**
+    if (window.gameState.donnaFollowing && lastKey) {
+      updateDonnaPositionBasedOnKey(lastKey);
+    }
+
 
 
       if (queuedDirection) {
@@ -819,70 +820,81 @@ function drawDonna() {
 function updateDonnaPositionBasedOnKey(key) {
   if (!window.gameState.donnaFollowing) return;
 
-  let moveX = 0, moveY = 0;
+  let targetX = donna.position.x;
+  let targetY = donna.position.y;
 
   switch (key) {
     case "w": // Perry moves UP
-      if (donna.position.y > player.position.y) moveY = -TILE_SIZE;
+      if (donna.position.y > player.position.y) targetY -= TILE_SIZE;
       break;
     case "s": // Perry moves DOWN
-      if (donna.position.y < player.position.y) moveY = TILE_SIZE;
+      if (donna.position.y < player.position.y) targetY += TILE_SIZE;
       break;
     case "a": // Perry moves LEFT
-      if (donna.position.x > player.position.x) moveX = -TILE_SIZE;
+      if (donna.position.x > player.position.x) targetX -= TILE_SIZE;
       break;
     case "d": // Perry moves RIGHT
-      if (donna.position.x < player.position.x) moveX = TILE_SIZE;
+      if (donna.position.x < player.position.x) targetX += TILE_SIZE;
       break;
   }
 
-  // 🚨 **Prevent Overlap**
-  if (donna.position.x + moveX === player.position.x && donna.position.y + moveY === player.position.y) {
+  // 🛑 **Collision Detection Before Moving**
+  let willCollide = boundaries.some(boundary => {
+    return rectangularCollision({
+      rectangle1: { position: { x: targetX, y: targetY }, width: TILE_SIZE, height: TILE_SIZE },
+      rectangle2: boundary
+    });
+  });
+
+  if (willCollide) {
+    console.log("🚧 Donna hit a wall! Stopping.");
+    return; // 🚫 Stop movement
+  }
+
+  // 🚨 **Prevent Overlap with Perry**
+  if (targetX === player.position.x && targetY === player.position.y) {
     console.log("🚨 Overlap detected! Adjusting Donna's position.");
     return;
   }
 
-  // Move Donna
-  donna.position.x += moveX;
-  donna.position.y += moveY;
+  // ✅ Calculate movement direction (AFTER confirming movement)
+  let moveX = targetX - donna.position.x;
+  let moveY = targetY - donna.position.y;
+
+  // ✅ Move Donna if there's no collision
+  donna.position.x = targetX;
+  donna.position.y = targetY;
 
   // 🎨 **Animate Donna's Frames**
   donna.frameCounter++;
 
-  if (donna.frameCounter % 10 === 0) { // Adjust 10 for animation speed
+  if (donna.frameCounter % 4 === 0) { // Adjust 10 for animation speed
     donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
   }
 
   // 🏎 **Check if Perry is in Bike Mode**
   if (window.gameState.bikeMode) {
-    if (moveX > 0) {
-      donna.currentSprite = donnaBikeRightImage; // Biking Right
-    } else if (moveX < 0) {
-      donna.currentSprite = donnaBikeLeftImage; // Biking Left
-    } else if (moveY > 0) {
-      donna.currentSprite = donnaBikeDownImage; // Biking Down
-    } else if (moveY < 0) {
-      donna.currentSprite = donnaBikeUpImage; // Biking Up
-    }
+    donna.currentSprite =
+      moveX > 0 ? donnaBikeRightImage :
+      moveX < 0 ? donnaBikeLeftImage :
+      moveY > 0 ? donnaBikeDownImage :
+      moveY < 0 ? donnaBikeUpImage : donna.currentSprite;
   } else {
-    // 🚶‍♀️ Walking Sprites
-    if (moveX > 0) {
-      donna.currentSprite = donnaRightImage; // Walking Right
-    } else if (moveX < 0) {
-      donna.currentSprite = donnaLeftImage; // Walking Left
-    } else if (moveY > 0) {
-      donna.currentSprite = donnaDownImage; // Walking Down
-    } else if (moveY < 0) {
-      donna.currentSprite = donnaUpImage; // Walking Up
-    }
+    donna.currentSprite =
+      moveX > 0 ? donnaRightImage :
+      moveX < 0 ? donnaLeftImage :
+      moveY > 0 ? donnaDownImage :
+      moveY < 0 ? donnaUpImage : donna.currentSprite;
   }
 }
+
 
 // ✅ Hook into Perry’s movement function
 window.addEventListener("keydown", (e) => {
   if (!["w", "a", "s", "d"].includes(e.key)) return;
   updateDonnaPositionBasedOnKey(e.key);
 });
+
 
 
 
