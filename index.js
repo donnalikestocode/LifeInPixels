@@ -171,61 +171,7 @@ const player = new Sprite({
   name:"Perry"
 })
 
-// const donna = new Sprite({
-//   position: { x: 2880, y: 704},
-//   image: donnaDownImage,
-//   name: "Donna",
-//   frames: { max: 4 },
-//   sprites: {
-//     up: donnaUpImage,
-//     down: donnaDownImage,
-//     left: donnaLeftImage,
-//     right: donnaRightImage,
-//     bikeUp: donnaBikeUpImage,
-//     bikeDown: donnaBikeDownImage,
-//     bikeLeft: donnaBikeLeftImage,
-//     bikeRight: donnaBikeRightImage,
-//   },
-//   visible: false,
-// });
-//   new Sprite({
-//     position: { x: 2700, y: 20 },
-//     image: kevinImage,
-//     name: "Kevin"
-//   }),
-//   new Sprite({
-//     position: { x: 950, y: 490 },
-//     image: lucasImage,
-//     name: "Lucas"
-//   }),
-//   new Sprite({
-//     position: { x: 500, y: 900 },
-//     image: gioImage,
-//     name: "Gio"
-//   }),
-//   new Sprite({
-//     position: { x: 1260, y: 800 },
-//     image: connieImage,
-//     name: "Connie"
-//   }),
-//   new Sprite({
-//     position: { x: 2555, y: 725 },
-//     image: davidImage,
-//     name: "David"
-//   }),
-//   new Sprite({
-//     position: { x: 1575, y: 1350 },
-//     image: meganImage,
-//     name: "Megan"
-//   }),
-//   new Sprite({
-//     position: { x: 1400, y: 100 },
-//     image: quynhImage,
-//     name: "Quynh"
-//   }),
-// ];
-
-const donna = {
+donna = {
   position: { x: 2880, y: 704 }, // Start position
   width: 64, // Adjust if needed
   height: 64,
@@ -317,25 +263,6 @@ const keys = {
 
 let worldOffsetX = offset.x;
 let worldOffsetY = offset.y;
-
-// const donnaCharacter = new Person({
-//   position: { x: 2880, y: 704 },
-//   sprite: donnaDownImage,
-// });
-
-// // 🚀 Move Donna up and down continuously
-// function animateDonna() {
-//   if (donnaCharacter.movingProgressRemaining === 0) {
-//     // Switch direction every time she completes a movement
-//     donnaCharacter.startWalking(donnaCharacter.direction === "up" ? "down" : "up");
-//   }
-
-//   donnaCharacter.updatePosition();
-//   donnaCharacter.updateSprite();
-//   refreshBoundaries();
-
-//   requestAnimationFrame(animateDonna);
-// }
 
 npcs.forEach(npc => {
   boundaries.push(
@@ -521,41 +448,6 @@ function movePlayer(direction) {
   }
 
   requestAnimationFrame(stepMove);
-}
-
-function startDonnaDialogue() {
-  const finalDialogue = [
-    "Hi Sir!!! I finally found you!!",
-    "I just want to thank you for being my best friend. :3",
-    "How’d I get so lucky? I didn’t catch them all, but I caught the only one that matters to me.",
-    "Wherever life takes us, I’m happy to walk (or bike) this journey alongside you.",
-    "Will you be my valentine and continue to explore together side by side? ♥️"
-  ];
-
-  let dialogueIndex = 0;
-  const dialogueBox = document.getElementById("dialogueBox");
-  dialogueBox.classList.remove("hidden");
-  dialogueBox.style.display = "flex";
-  document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
-
-  function nextDialogue(event) {
-    if (event.key === "Enter") {
-      dialogueIndex++;
-      if (dialogueIndex < finalDialogue.length) {
-        document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
-      } else {
-        // 🎉 End dialogue & remove event listener
-        document.getElementById("dialogueBox").classList.add("hidden");
-        document.removeEventListener("keydown", nextDialogue);
-
-        // ✅ Unfreeze Perry so he can move again
-        window.gameState.freezePerry = false;
-        console.log("✅ Perry can move again!");
-      }
-    }
-  }
-
-  document.addEventListener("keydown", nextDialogue);
 }
 
 window.addEventListener("keydown", (e) => {
@@ -816,7 +708,40 @@ function drawDonna() {
   );
 }
 
+function startDonnaDialogue() {
+  const finalDialogue = [
+    "Hi Sir!!! I finally found you!!",
+    "I just want to thank you for being my best friend. :3",
+    "How’d I get so lucky? I didn’t catch them all, but I caught the only one that matters to me.",
+    "Wherever life takes us, I’m happy to walk (or bike) this journey alongside you.",
+    "Will you be my valentine and continue to explore together side by side? ♥️"
+  ];
 
+  let dialogueIndex = 0;
+  const dialogueBox = document.getElementById("dialogueBox");
+  dialogueBox.classList.remove("hidden");
+  dialogueBox.style.display = "flex";
+  document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
+
+  function nextDialogue(event) {
+    if (event.key === "Enter") {
+      dialogueIndex++;
+      if (dialogueIndex < finalDialogue.length) {
+        document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
+      } else {
+        // 🎉 End dialogue & remove event listener
+        document.getElementById("dialogueBox").classList.add("hidden");
+        document.removeEventListener("keydown", nextDialogue);
+
+        // ✅ Unfreeze Perry so he can move again
+        window.gameState.freezePerry = false;
+        console.log("✅ Perry can move again!");
+      }
+    }
+  }
+
+  document.addEventListener("keydown", nextDialogue);
+}
 
 
 
