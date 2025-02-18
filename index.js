@@ -3,12 +3,15 @@ const c = canvas.getContext("2d");
 
 const TILE_SIZE = 64;
 
+let donnaMovementInterval = null; // Track Donna's movement loop
+
 window.gameState = {
   bikeMode: false,
   talkedToNPCs: {},
   freezePerry: false,
   donnaBoundaryAdded: false,
   boundariesNeedUpdate: false,
+  donnaCooldown: false,
 };
 
 function updateMovementSpeed() {
@@ -569,6 +572,16 @@ function advanceDialogue(event) {
       isDialogueActive = false;
       window.gameState.freezePerry = false; // ✅ Unfreeze Perry
 
+      // ✅ If Donna's dialogue just ended, WAIT before restarting her movement
+      if (currentDialogue === npcDialogues["Donna"]) {
+        console.log("⏳ Waiting before restarting Donna's movement...");
+        setTimeout(() => {
+          console.log("🔄 Restarting Donna's movement...");
+          window.gameState.donnaCooldown = false; // Remove cooldown
+          moveDonna();
+        }, 2000); // 🕒 2-second delay before restarting movement
+      }
+
       dialogueIndex = 0;
       currentDialogue = null;
     }
@@ -647,50 +660,69 @@ function refreshBoundaries() {
 }
 
 function moveDonna() {
-  if (!donna.visible) return; // Only move if she has appeared
+  if (!donna.visible || window.gameState.donnaCooldown) return; // 🛑 Stop if cooldown is active
 
   console.log("🚀 Moving Donna...");
 
-  const moveAmount = TILE_SIZE / window.MOVEMENT_STEPS; // Match player's step size
+  const moveAmount = TILE_SIZE / window.MOVEMENT_STEPS;
   let stepProgress = 0;
-  const maxSteps = TILE_SIZE * 3; // Move exactly 3 tiles (192 pixels)
+  const maxSteps = TILE_SIZE * 3;
 
   const interval = setInterval(() => {
     if (stepProgress >= maxSteps) {
-      donna.direction *= -1; // Switch direction
+      donna.direction *= -1;
       stepProgress = 0;
     }
 
     let nextY = donna.position.y - moveAmount * donna.direction;
 
-    // 🛑 Collision check with Perry
+    // 🛑 **Check if Perry is near Donna, but only if cooldown is inactive**
+    if (!window.gameState.donnaCooldown) {
+      const perryNearDonna =
+        (Math.abs(player.position.x - donna.position.x) === TILE_SIZE &&
+          player.position.y === donna.position.y) ||
+        (Math.abs(player.position.y - donna.position.y) === TILE_SIZE &&
+          player.position.x === donna.position.x);
+
+      if (perryNearDonna) {
+        console.log("🚨 Perry is near Donna! Stopping her movement.");
+
+        donna.position.y = Math.round(donna.position.y / TILE_SIZE) * TILE_SIZE;
+        donna.position.x = Math.round(donna.position.x / TILE_SIZE) * TILE_SIZE;
+
+        // ✅ **Activate cooldown BEFORE starting dialogue**
+        window.gameState.donnaCooldown = true;
+
+        startDialogue("Donna");
+
+        clearInterval(interval); // ⛔ Stop Donna's movement
+        return;
+      }
+    }
+
     let willCollideWithPerry = rectangularCollision({
       rectangle1: { position: { x: donna.position.x, y: nextY }, width: donna.width, height: donna.height },
-      rectangle2: { position: player.position, width: player.width, height: player.height }
+      rectangle2: { position: player.position, width: player.width, height: player.height },
     });
 
     if (!willCollideWithPerry) {
       donna.position.y = nextY;
       stepProgress += moveAmount;
 
-      // ✅ Update sprite every 6 movements to slow animation
       donna.frameCounter++;
-      if (donna.frameCounter % 1 === 0) { // Adjust this number for slower animation
+      if (donna.frameCounter % 1 === 0) {
         donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
       }
 
-      // Swap sprite based on direction
       donna.currentSprite = donna.direction === -1 ? donnaDownImage : donnaUpImage;
 
-      // 🔄 **Refresh boundaries to match new position**
       refreshBoundaries();
-
     } else {
       console.log("🚫 Donna stopped! Perry is in front of her.");
     }
-
-  }, 150); // 🔄 Adjust timing for slower movement
+  }, 150);
 }
+
 
 function drawDonna() {
   if (!donna.visible) return;
@@ -707,43 +739,6 @@ function drawDonna() {
     donna.height
   );
 }
-
-function startDonnaDialogue() {
-  const finalDialogue = [
-    "Hi Sir!!! I finally found you!!",
-    "I just want to thank you for being my best friend. :3",
-    "How’d I get so lucky? I didn’t catch them all, but I caught the only one that matters to me.",
-    "Wherever life takes us, I’m happy to walk (or bike) this journey alongside you.",
-    "Will you be my valentine and continue to explore together side by side? ♥️"
-  ];
-
-  let dialogueIndex = 0;
-  const dialogueBox = document.getElementById("dialogueBox");
-  dialogueBox.classList.remove("hidden");
-  dialogueBox.style.display = "flex";
-  document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
-
-  function nextDialogue(event) {
-    if (event.key === "Enter") {
-      dialogueIndex++;
-      if (dialogueIndex < finalDialogue.length) {
-        document.getElementById("dialogueText").innerText = finalDialogue[dialogueIndex];
-      } else {
-        // 🎉 End dialogue & remove event listener
-        document.getElementById("dialogueBox").classList.add("hidden");
-        document.removeEventListener("keydown", nextDialogue);
-
-        // ✅ Unfreeze Perry so he can move again
-        window.gameState.freezePerry = false;
-        console.log("✅ Perry can move again!");
-      }
-    }
-  }
-
-  document.addEventListener("keydown", nextDialogue);
-}
-
-
 
 
 

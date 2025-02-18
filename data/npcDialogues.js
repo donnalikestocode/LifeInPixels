@@ -39,5 +39,12 @@ const npcDialogues = {
   ],
   "PerryHint": [
     "Wait... I think I know where to find her. Donna must be at the library!"
+  ],
+  "Donna": [
+    "Donna: Hi Perry! I've been looking for you everywhere!",
+    "Donna: I just wanted to say thank you for being my best friend. :3",
+    "Donna: How’d I get so lucky? I didn’t catch them all, but I caught the only one that matters to me.",
+    "Donna: Wherever life takes us, I’m happy to walk (or bike) this journey alongside you.",
+    "Donna: Will you be my valentine and continue to explore together side by side? ♥️"
   ]
 };
