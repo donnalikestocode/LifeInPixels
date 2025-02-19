@@ -12,6 +12,7 @@ import { refreshBoundaries } from "./boundaries.js";
 import { background, foreground, extraForegroundObjects } from "./map.js";
 import { Grid } from "./grid.js";
 import { updateDonnaPositionBasedOnKey } from "./companion.js";
+import { thoughtBubble, drawThoughtBubble } from "./quest.js";
 
 const grid = new Grid();
 
@@ -91,6 +92,11 @@ function animate() {
     drawDonna();
   }
 
+  if (thoughtBubble?.visible) {
+    console.log("drawing thought bubble");
+    drawThoughtBubble();
+  }
+
   if (gameState.isDialogueActive) return;
 
   foreground.draw();
@@ -136,14 +142,6 @@ window.addEventListener("keydown", (e) => {
   }
 
   movePlayer(e.key);
-
-
-  //   if (!gameState.isMoving) {
-  //   movePlayer(e.key);
-  // } else if (!gameState.queuedDirection) {
-  //   gameState.queuedDirection = e.key;
-  // }
-
 });
 
 window.addEventListener("keyup", (e) => {

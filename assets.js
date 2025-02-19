@@ -10,16 +10,16 @@ extraForegroundObjectsImage.src = "./img/extraForegroundObjects.png";
 export { image, foregroundImage, extraForegroundObjectsImage };
 
 const playerDownImage = new Image();
-playerDownImage.src = "./img/Perry_playerDown.png";
+playerDownImage.src = "./img/Player/Perry_playerDown.png";
 
 const playerUpImage = new Image();
-playerUpImage.src = "./img/Perry_playerUp.png";
+playerUpImage.src = "./img/Player/Perry_playerUp.png";
 
 const playerLeftImage = new Image();
-playerLeftImage.src = "./img/Perry_playerLeft.png";
+playerLeftImage.src = "./img/Player/Perry_playerLeft.png";
 
 const playerRightImage = new Image();
-playerRightImage.src = "./img/Perry_playerRight.png";
+playerRightImage.src = "./img/Player/Perry_playerRight.png";
 
 const playerBikeUpImage = new Image();
 playerBikeUpImage.src = "./img/Bike/Perry_bikeUp.png";
@@ -82,4 +82,7 @@ meganImage.src = "./img/NPCs/Megan.png";
 const quynhImage = new Image();
 quynhImage.src = "./img/NPCs/Quynh.png";
 
-export { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage }
+const thoughtBubbleImage = new Image();
+thoughtBubbleImage.src = "./img/UI/thoughtBubble.png";
+
+export { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage, thoughtBubbleImage }

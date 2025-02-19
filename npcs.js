@@ -1,5 +1,5 @@
 import { Sprite, Boundary } from "./classes.js";
-import { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage } from "./assets.js";
+import { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage} from "./assets.js";
 import { TILE_SIZE, gameState } from "./constants.js";
 import { player } from "./player.js";
 

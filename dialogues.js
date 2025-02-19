@@ -3,12 +3,17 @@ import { donna } from "./companion.js";
 import { donnaUpImage, donnaDownImage, donnaLeftImage, donnaRightImage } from "./assets.js";
 import { player } from "./player.js";
 import { refreshBoundaries } from "./boundaries.js";
+import { thoughtBubble, drawThoughtBubble } from "./quest.js";
 
 let dialogueIndex = 0;
 let currentDialogue = null;
 
 function startDialogue(npcName) {
   if (!npcDialogues[npcName]) return;
+
+  if (npcName === "PerryHint") {
+    thoughtBubble.visible = true;
+  }
 
   if (npcName === "Donna") {
     faceEachOtherBeforeDialogue(); // Donna turns to face Perry
@@ -44,10 +49,12 @@ function advanceDialogue(event) {
       gameState.isDialogueActive = false;
       gameState.freezePerry = false; // ✅ Unfreeze Perry
 
-       if (currentDialogue === npcDialogues["Donna"]) {
-        console.log("✨ Donna is now following Perry!");
-        gameState.donnaFollowing = true; // 🔄 Start following after dialogue
-        refreshBoundaries();
+      thoughtBubble.visible = false;
+
+      if (currentDialogue === npcDialogues["Donna"]) {
+      console.log("✨ Donna is now following Perry!");
+      gameState.donnaFollowing = true; // 🔄 Start following after dialogue
+      refreshBoundaries();
       }
 
       dialogueIndex = 0;
