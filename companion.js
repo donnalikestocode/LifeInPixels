@@ -4,7 +4,7 @@ import { c, TILE_SIZE } from "./constants.js";
 import { player } from "./player.js";
 import { startDialogue } from "./dialogues.js";
 import { rectangularCollision } from "./utils.js";
-import { refreshBoundaries } from "./index.js";
+import { refreshBoundaries } from "./boundaries.js";
 
 const donna = {
   position: { x: 2880, y: 704 }, // Start position
