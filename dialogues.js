@@ -44,18 +44,6 @@ function advanceDialogue(event) {
       gameState.isDialogueActive = false;
       gameState.freezePerry = false; // ✅ Unfreeze Perry
 
-      // ✅ If Donna's dialogue just ended, WAIT before restarting her movement
-      // if (currentDialogue === npcDialogues["Donna"]) {
-      //   console.log("⏳ Waiting before restarting Donna's movement...");
-      //   setTimeout(() => {
-      //     console.log("🔄 Restarting Donna's movement...");
-      //     donnaCooldown = false; // Remove cooldown
-      //     moveDonna();
-      //     donnaFollowing = true;
-      //   }, 200); // 🕒 2-second delay before restarting movement
-      // }
-
-       // ✅ If Donna’s dialogue just ended, she should start following Perry
        if (currentDialogue === npcDialogues["Donna"]) {
         console.log("✨ Donna is now following Perry!");
         gameState.donnaFollowing = true; // 🔄 Start following after dialogue
