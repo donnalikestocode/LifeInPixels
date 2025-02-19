@@ -1,16 +1,19 @@
-import {canvas, c, offset, TILE_SIZE} from "./constants.js";
+import {canvas, c, offset, TILE_SIZE, keys} from "./constants.js";
 import { gameState } from "./constants.js";
+import { rectangularCollision } from "./utils.js";
 import { Sprite, Boundary } from "./classes.js";
 import { player, movePlayer, updateMovementSpeed, updatePlayerSprite } from "./player.js";
-import { rectangularCollision } from "./utils.js";
+import { npcs } from "./npcs.js";
+import { handleNpcInteraction } from "./quest.js";
+import { startDialogue, advanceDialogue } from "./dialogues.js";
 import { donnaUpImage, donnaDownImage, donnaLeftImage, donnaRightImage, donnaBikeUpImage, donnaBikeDownImage, donnaBikeLeftImage, donnaBikeRightImage } from "./assets.js";
 import { image, foregroundImage, extraForegroundObjectsImage } from "./assets.js";
-import { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage } from "./assets.js";
 
 let activeNpc = null;
-let currentDialogue = null;
+let animationStarted = false;
 
 const collisionsMap = []
+
 for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, i + 70))
 }
@@ -33,7 +36,7 @@ collisionsMap.forEach((row, i) => {
 c.fillStyle = "white";
 c.fillRect(0, 0, canvas.width, canvas.height);
 
-const donna = {
+export const donna = {
   position: { x: 2880, y: 704 }, // Start position
   width: 64, // Adjust if needed
   height: 64,
@@ -45,44 +48,6 @@ const donna = {
   maxFrames: 4, // Total frames in sprite sheet
   visible: false,
 };
-
-const npcs = [
-  // new Sprite({
-  //   position: { x: 2688, y: 0 },
-  //   image: kevinImage,
-  //   name: "Kevin"
-  // }),
-  new Sprite({
-    position: { x: 960, y: 512 },
-    image: lucasImage,
-    name: "Lucas"
-  }),
-  // new Sprite({
-  //   position: { x: 512, y: 896 },
-  //   image: gioImage,
-  //   name: "Gio"
-  // }),
-  // new Sprite({
-  //   position: { x: 1280, y: 768 },
-  //   image: connieImage,
-  //   name: "Connie"
-  // }),
-  // new Sprite({
-  //   position: {x: 2560, y: 704 },
-  //   image: davidImage,
-  //   name: "David"
-  // }),
-  // new Sprite({
-  //   position: { x: 1600, y: 1344 },
-  //   image: meganImage,
-  //   name: "Megan"
-  // }),
-  // new Sprite({
-  //   position: { x: 1408, y: 128 },
-  //   image: quynhImage,
-  //   name: "Quynh"
-  // }),
-];
 
 const background = new Sprite({
   position: {
@@ -108,46 +73,10 @@ const extraForegroundObjects = new Sprite({
   image: extraForegroundObjectsImage,
 });
 
-const keys = {
-  w: {
-    pressed: false,
-  },
-  a: {
-    pressed: false,
-  },
-  s: {
-    pressed: false,
-  },
-  d: {
-    pressed: false,
-  },
-};
-
 gameState.worldOffsetX = offset.x;
 gameState.worldOffsetY = offset.y;
 
-npcs.forEach(npc => {
-  gameState.boundaries.push(
-    new Boundary({
-      position: {
-        x: npc.position.x,
-        y: npc.position.y
-      },
-      width: 96,
-      height: 96
-    })
-  );
-});
-
-// Initialize all NPCs as "not talked to"
-npcs.forEach(npc => {
-  gameState.talkedToNPCs[npc.name] = false;
-});
-
 gameState.movables.push(background, ...gameState.boundaries, foreground, extraForegroundObjects, ...npcs, donna)
-
-let dialogueIndex = 0;
-let animationStarted = false;
 
 function animate() {
   if (!animationStarted) {
@@ -193,7 +122,7 @@ function animate() {
       }
     });
 
-    activeNpc = npcNearby; // ✅ Update the active NPC
+    activeNpc = npcNearby;
 
     player.draw();
     foreground.draw();
@@ -295,91 +224,6 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
-function handleNpcInteraction(npc) {
-  if (!gameState.talkedToNPCs[npc.name]) {
-    gameState.talkedToNPCs[npc.name] = true;
-    console.log(`✅ Perry talked to ${npc.name}`);
-
-    if (Object.values(gameState.talkedToNPCs).every(Boolean)) {
-      console.log("🎉 All NPCs talked to! Donna will now appear...");
-      donna.visible = true;
-
-      if (!gameState.donnaBoundaryAdded) {
-        gameState.donnaBoundaryAdded = true;
-        gameState.boundariesNeedUpdate = true;
-        // moveDonna();
-      }
-      moveDonna();
-
-      // ⏳ Wait 7 seconds, then trigger Perry's realization
-      setTimeout(() => {
-        startDialogue("PerryHint");
-      }, 7000);
-    }
-
-  }
-}
-
-function advanceDialogue(event) {
-  if (event.key === "Enter") {
-    dialogueIndex++;
-
-    if (dialogueIndex < currentDialogue.length) {
-      document.getElementById("dialogueText").innerText = currentDialogue[dialogueIndex];
-    } else {
-      // 🎉 End dialogue
-      document.getElementById("dialogueBox").classList.add("hidden");
-      document.getElementById("dialogueBox").style.display = "none";
-
-      gameState.isDialogueActive = false;
-      gameState.freezePerry = false; // ✅ Unfreeze Perry
-
-      // ✅ If Donna's dialogue just ended, WAIT before restarting her movement
-      // if (currentDialogue === npcDialogues["Donna"]) {
-      //   console.log("⏳ Waiting before restarting Donna's movement...");
-      //   setTimeout(() => {
-      //     console.log("🔄 Restarting Donna's movement...");
-      //     donnaCooldown = false; // Remove cooldown
-      //     moveDonna();
-      //     donnaFollowing = true;
-      //   }, 200); // 🕒 2-second delay before restarting movement
-      // }
-
-       // ✅ If Donna’s dialogue just ended, she should start following Perry
-       if (currentDialogue === npcDialogues["Donna"]) {
-        console.log("✨ Donna is now following Perry!");
-        gameState.donnaFollowing = true; // 🔄 Start following after dialogue
-      }
-
-      dialogueIndex = 0;
-      currentDialogue = null;
-    }
-  }
-}
-
-function startDialogue(npcName) {
-  if (!npcDialogues[npcName]) return;
-
-  if (npcName === "Donna") {
-    faceEachOtherBeforeDialogue(); // Donna turns to face Perry
-  }
-
-  dialogueIndex = 0;
-  gameState.isDialogueActive = true;
-  gameState.freezePerry = true; // ⛔ Freeze movement
-
-  currentDialogue = npcDialogues[npcName]; // ✅ Track active dialogue
-
-  // ✅ Ensure the dialogue box is fully visible
-  const dialogueBox = document.getElementById("dialogueBox");
-  dialogueBox.classList.remove("hidden");
-  dialogueBox.style.visibility = "visible";
-  dialogueBox.style.opacity = "1";
-  dialogueBox.style.display = "flex";
-
-  document.getElementById("dialogueText").innerText = currentDialogue[dialogueIndex];
-}
-
 function refreshBoundaries() {
   // console.log("🔄 Refreshing boundaries...");
   // console.log(`📌 Current world offset: x=${worldOffsetX}, y=${worldOffsetY}`);
@@ -431,7 +275,7 @@ function refreshBoundaries() {
   // console.log("✅ Boundaries updated. Total count:", boundaries.length);
 }
 
-function moveDonna() {
+export function moveDonna() {
   if (!donna.visible || gameState.donnaCooldown) return; // 🛑 Stop if cooldown is active
 
   console.log("🚀 Moving Donna...");
@@ -495,23 +339,6 @@ function moveDonna() {
   }, 150);
 }
 
-function faceEachOtherBeforeDialogue() {
-  // Determine Perry's direction to face Donna
-  if (player.position.x < donna.position.x) {
-    player.image = player.sprites.right; // Perry faces right
-    donna.currentSprite = donnaLeftImage; // Donna faces left
-  } else if (player.position.x > donna.position.x) {
-    player.image = player.sprites.left; // Perry faces left
-    donna.currentSprite = donnaRightImage; // Donna faces right
-  } else if (player.position.y < donna.position.y) {
-    player.image = player.sprites.down; // Perry faces down
-    donna.currentSprite = donnaUpImage; // Donna faces up
-  } else if (player.position.y > donna.position.y) {
-    player.image = player.sprites.up; // Perry faces up
-    donna.currentSprite = donnaDownImage; // Donna faces down
-  }
-}
-
 function drawDonna() {
   if (!donna.visible) return;
 
@@ -528,40 +355,6 @@ function drawDonna() {
   );
 }
 
-// function updateDonnaPosition() {
-//   if (!donnaFollowing || perryPreviousPositions.length < 3) return;
-
-//   console.log("🔄 Donna is trying to follow Perry!", perryPreviousPositions);
-//   const previousStep = perryPreviousPositions[1]; // Perry's 3-steps-ago position
-
-//   if (!previousStep) return;
-
-//   let moveX = previousStep.x - donna.position.x;
-//   let moveY = previousStep.y - donna.position.y;
-
-//   // Move one axis at a time (X first, then Y)
-//   if (Math.abs(moveX) > 0) {
-//     donna.position.x += Math.sign(moveX) * TILE_SIZE ;
-//   } else if (Math.abs(moveY) > 0) {
-//     donna.position.y += Math.sign(moveY) * TILE_SIZE ;
-//   }
-
-//   // 🎨 **Update Donna's sprite based on Perry's movement**
-//   if (bikeMode) {
-//     if (lastKey === "w") donna.currentSprite = donnaBikeUpImage;
-//     else if (lastKey === "a") donna.currentSprite = donnaBikeLeftImage;
-//     else if (lastKey === "s") donna.currentSprite = donnaBikeDownImage;
-//     else if (lastKey === "d") donna.currentSprite = donnaBikeRightImage;
-//   } else {
-//     if (lastKey === "w") donna.currentSprite = donnaUpImage;
-//     else if (lastKey === "a") donna.currentSprite = donnaLeftImage;
-//     else if (lastKey === "s") donna.currentSprite = donnaDownImage;
-//     else if (lastKey === "d") donna.currentSprite = donnaRightImage;
-//   }
-
-//   console.log(`✨ Donna moved to: X=${donna.position.x}, Y=${donna.position.y}, Sprite: ${donna.currentSprite.src}`);
-// }
-
 function smoothMoveDonna(targetX, targetY) {
   if (donna.moving) return; // Prevent duplicate movement
 
@@ -571,7 +364,7 @@ function smoothMoveDonna(targetX, targetY) {
   let startY = donna.position.y;
   let distanceX = targetX - startX;
   let distanceY = targetY - startY;
-  let steps = 8; // Adjust for smoothness (higher = slower, lower = faster)
+  let steps = 16; // Adjust for smoothness (higher = slower, lower = faster)
   let stepX = distanceX / steps;
   let stepY = distanceY / steps;
   let stepCount = 0;
@@ -583,7 +376,7 @@ function smoothMoveDonna(targetX, targetY) {
       stepCount++;
 
       // 🎨 **Update Animation Frames**
-      if (stepCount % 2 === 0) { // Adjust animation speed
+      if (stepCount % 4 === 0) { // Adjust animation speed
         donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
       }
 
@@ -669,6 +462,7 @@ export function updateDonnaPositionBasedOnKey(key) {
       moveY < 0 ? donnaUpImage : donna.currentSprite;
   }
 }
+
 // // ✅ Hook into Perry’s movement function
 // window.addEventListener("keydown", (e) => {
 //   if (!["w", "a", "s", "d"].includes(e.key)) return;

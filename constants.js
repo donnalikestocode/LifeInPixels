@@ -3,6 +3,21 @@ canvas.width = 1024;
 canvas.height = 576;
 export const c = canvas.getContext("2d");
 
+export const keys = {
+  w: {
+    pressed: false,
+  },
+  a: {
+    pressed: false,
+  },
+  s: {
+    pressed: false,
+  },
+  d: {
+    pressed: false,
+  },
+};
+
 export const TILE_SIZE = 64;
 export const offset = {
   x: Math.floor(-600 / 64) * 64, // Force align to grid
