@@ -2,8 +2,6 @@ import { Sprite } from "./classes.js";
 import { c, gameState } from "./constants.js";
 import { heartThoughtBubble } from "./emotions.js";
 import { thoughtBubble } from "./quest.js";
-import { donna } from "./companion.js";
-
 
 function startIntroDialogue() {
   const dialogueBox = document.getElementById("dialogueBox");

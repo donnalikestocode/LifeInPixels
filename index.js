@@ -15,6 +15,7 @@ import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
 import { heartThoughtBubble, drawHeartThoughtBubble } from "./emotions.js";
 import { startIntroDialogue } from "./welcome.js";
+import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu } from "./menu.js";
 
 const grid = new Grid();
 
@@ -113,6 +114,10 @@ function animate() {
 
   if (gameState.isDialogueActive) return;
 
+  if (gameMenu.isOpen) {
+    drawGameMenu();
+  }
+
 }
 
 animate()
@@ -142,6 +147,25 @@ window.addEventListener("keydown", (e) => {
     }
     return;
   }
+
+    // Toggle menu with ESC key
+    if (e.key === "Escape") {
+      gameMenu.isOpen = !gameMenu.isOpen;
+      updateGameMenu();
+      return;
+    }
+
+    // Handle menu navigation if it's open
+    if (gameMenu.isOpen) {
+      if (e.key === "w") {
+        gameMenu.selectedOption = (gameMenu.selectedOption - 1 + gameMenu.options.length) % gameMenu.options.length;
+      } else if (e.key === "s") {
+        gameMenu.selectedOption = (gameMenu.selectedOption + 1) % gameMenu.options.length;
+      } else if (e.key === "Enter") {
+        handleMenuSelection();
+      }
+      return;
+    }
 
   if(gameState.isDialogueActive) {
     advanceDialogue(e);
