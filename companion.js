@@ -76,26 +76,18 @@ function moveDonna() {
       }
     }
 
-    let willCollideWithPerry = rectangularCollision({
-      rectangle1: { position: { x: donna.position.x, y: nextY }, width: donna.width, height: donna.height },
-      rectangle2: { position: player.position, width: player.width, height: player.height },
-    });
+    donna.position.y = nextY;
+    stepProgress += moveAmount;
 
-    if (!willCollideWithPerry) {
-      donna.position.y = nextY;
-      stepProgress += moveAmount;
-
-      donna.frameCounter++;
-      if (donna.frameCounter % 4 === 0) {
-        donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
-      }
-
-      donna.currentSprite = donna.direction === -1 ? donnaDownImage : donnaUpImage;
-
-      refreshBoundaries();
-    } else {
-      console.log("🚫 Donna stopped! Perry is in front of her.");
+    donna.frameCounter++;
+    if (donna.frameCounter % 4 === 0) {
+      donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
     }
+
+    donna.currentSprite = donna.direction === -1 ? donnaDownImage : donnaUpImage;
+
+    refreshBoundaries();
+
   }, 150);
 }
 
@@ -150,7 +142,7 @@ function updateDonnaPositionBasedOnKey(key) {
   // 🎨 **Animate Donna's Frames**
   donna.frameCounter++;
 
-  if (donna.frameCounter % 1 === 0) { // Adjust 10 for animation speed
+  if (donna.frameCounter % 4 === 0) { // Adjust 10 for animation speed
     donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
   }
 

@@ -82,14 +82,10 @@ export function movePlayer(direction) {
   gameState.moveX = moveX / gameState.MOVEMENT_STEPS;
   gameState.moveY = moveY / gameState.MOVEMENT_STEPS;
   gameState.stepProgress = 0;
-
-  console.log(`🔄 Move Step: ${gameState.moveX}, ${gameState.moveY}`);
-  console.log(`🚀 Moving ${direction} by ${moveX}, ${moveY}`);
-  console.log(`🔢 Steps Remaining: ${gameState.stepProgress}/${gameState.MOVEMENT_STEPS}`);
 }
 
 export function updateMovementSpeed() {
-  gameState.MOVEMENT_STEPS = gameState.bikeMode ? 8 : 16;
+  gameState.MOVEMENT_STEPS = gameState.bikeMode ? 16 : 32;
 }
 
 export function updatePlayerSprite() {
