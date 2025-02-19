@@ -14,9 +14,6 @@ import { background, foreground, extraForegroundObjects } from "./map.js";
 let activeNpc = null;
 let animationStarted = false;
 
-gameState.worldOffsetX = offset.x;
-gameState.worldOffsetY = offset.y;
-
 gameState.movables.push(background, ...gameState.boundaries, foreground, extraForegroundObjects, ...npcs, donna)
 
 function animate() {

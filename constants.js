@@ -28,8 +28,8 @@ export const offset = {
 };
 
 export const gameState = {
-  worldOffsetX: 0,
-  worldOffsetY: 0,
+  worldOffsetX: offset.x,
+  worldOffsetY: offset.y,
 
   movables: [],
 
