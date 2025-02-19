@@ -19,6 +19,20 @@ const donna = {
   visible: false,
 };
 
+const donnaWalkSprites = {
+  up: donnaUpImage,
+  down: donnaDownImage,
+  left: donnaLeftImage,
+  right: donnaRightImage
+};
+
+const donnaBikeSprites = {
+  up: donnaBikeUpImage,
+  down: donnaBikeDownImage,
+  left: donnaBikeLeftImage,
+  right: donnaBikeRightImage
+};
+
 function drawDonna() {
   if (!donna.visible) return;
 
@@ -82,7 +96,6 @@ function moveDonna() {
 
     donna.frameCounter++;
     if (donna.frameCounter % 2 === 0) {
-      console.log("🔄 Donna frame index: ", donna.frameCounter);
       donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
     }
 
@@ -98,19 +111,33 @@ function updateDonnaPositionBasedOnKey(key) {
 
   let targetX = donna.position.x;
   let targetY = donna.position.y;
+  let direction = null;
+
 
   switch (key) {
     case "w":
-      if (donna.position.y > player.position.y) targetY -= TILE_SIZE;
+      if (donna.position.y > player.position.y) {
+        targetY -= TILE_SIZE;
+        direction = "up";
+      }
       break;
     case "s":
-      if (donna.position.y < player.position.y) targetY += TILE_SIZE;
+      if (donna.position.y < player.position.y) {
+        targetY += TILE_SIZE;
+        direction = "down";
+      }
       break;
     case "a":
-      if (donna.position.x > player.position.x) targetX -= TILE_SIZE;
+      if (donna.position.x > player.position.x) {
+        targetX -= TILE_SIZE;
+        direction = "left";
+      }
       break;
     case "d":
-      if (donna.position.x < player.position.x) targetX += TILE_SIZE;
+      if (donna.position.x < player.position.x) {
+        targetX += TILE_SIZE;
+        direction = "right";
+      }
       break;
   }
 
@@ -138,6 +165,12 @@ function updateDonnaPositionBasedOnKey(key) {
   gameState.donnaMoveY = (targetY - donna.position.y) / gameState.MOVEMENT_STEPS;
   gameState.donnaStepProgress = 0;
   gameState.donnaMoving = true; // ✅ Start moving Donna
+
+  if (direction) {
+    donna.currentSprite = gameState.bikeMode
+      ? donnaBikeSprites[direction]
+      : donnaWalkSprites[direction]; // Use correct sprite based on direction
+  }
 }
 
 export { donna,drawDonna, moveDonna, updateDonnaPositionBasedOnKey };

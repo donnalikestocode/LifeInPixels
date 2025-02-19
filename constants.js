@@ -50,7 +50,4 @@ export const gameState = {
   donnaCooldown: false,
   donnaFollowing: false,
   MOVEMENT_STEPS: 32, //this is always the walking speed initally
-
-  // boundariesNeedUpdate: false,
-  // donnaBoundaryAdded: false,
 };

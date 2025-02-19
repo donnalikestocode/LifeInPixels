@@ -70,12 +70,20 @@ function animate() {
     gameState.donnaStepProgress++;
 
     if (gameState.donnaStepProgress % 16 === 0) {
-      console.log("🔄 Donna frame index3: ", donna.frameIndex);
       donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
     }
 
     if (gameState.donnaStepProgress >= gameState.MOVEMENT_STEPS) {
       gameState.donnaMoving = false;
+      gameState.donnaStepProgress = 0;
+
+      // ✅ Ensure Donna finishes a tile before switching modes
+      if (gameState.pendingBikeModeChange) {
+        gameState.bikeMode = gameState.pendingBikeModeChange;
+        updateMovementSpeed();
+        updatePlayerSprite();
+        gameState.pendingBikeModeChange = null; // Clear pending mode change
+      }
     }
   }
 
@@ -111,7 +119,9 @@ window.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "b") {
-    if (gameState.isMoving) {
+    if (gameState.isMoving || gameState.donnaMoving) {
+      console.log("🚫 Cannot switch bike mode while moving! Queuing change.");
+      gameState.pendingBikeModeChange = !gameState.bikeMode; // Store change request
       return;
     }
     gameState.bikeMode = !gameState.bikeMode;
