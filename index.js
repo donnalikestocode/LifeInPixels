@@ -178,8 +178,6 @@ function animate() {
     let npcNearby = null;
 
     npcs.forEach(npc => {
-      // console.log(`📌 NPC ${npc.name} is at X: ${npc.position.x}, Y: ${npc.position.y}`);
-      // console.log(`🚶 Perry is at X: ${player.position.x}, Y: ${player.position.y}`);
 
       npc.draw();
 
@@ -187,21 +185,15 @@ function animate() {
       const distanceX = Math.abs(npc.position.x - player.position.x);
       const distanceY = Math.abs(npc.position.y - player.position.y);
 
-      // console.log(`📌 Distance X: ${distanceX}, Distance Y: ${distanceY}`);
-      // console.log(`🚶 Last key: ${lastKey}`);
-
       if (
-        (distanceX === 64 && distanceY === 0 && (gameState.lastKey === "a" || gameState.lastKey === "d")) ||  // Left/Right detection
-        (distanceY === 64 && distanceX === 0 && (gameState.lastKey === "w" || gameState.      lastKey === "s"))    // Up/Down detection
+        (distanceX === 64 && distanceY === 0 && (gameState.lastKey === "a" || gameState.lastKey === "d")) ||
+        (distanceY === 64 && distanceX === 0 && (gameState.lastKey === "w" || gameState.lastKey === "s"))
       ) {
-        console.log(`📌 NPC ${npc.name} is nearby!`);
         npcNearby = npc;
       }
     });
 
-    // console.log("Nearby NPC detected:", npcNearby);
     activeNpc = npcNearby; // ✅ Update the active NPC
-    // console.log("Updated activeNpc:", activeNpc);
 
     player.draw();
     foreground.draw();
