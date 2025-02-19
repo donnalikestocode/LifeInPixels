@@ -1,5 +1,5 @@
 const image = new Image();
-image.src = "./img/Perry_UCSB_Vday.png";
+image.src = "./img/UCSB_Map.png";
 
 const foregroundImage = new Image();
 foregroundImage.src = "./img/foregroundObjects.png";
