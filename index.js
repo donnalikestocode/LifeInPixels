@@ -3,7 +3,7 @@ import { gameState } from "./constants.js";
 import { rectangularCollision } from "./utils.js";
 import { Sprite, Boundary } from "./classes.js";
 import { player, movePlayer, updateMovementSpeed, updatePlayerSprite } from "./player.js";
-import { npcs } from "./npcs.js";
+import { npcs, getNearbyNpc } from "./npcs.js";
 import { handleNpcInteraction } from "./quest.js";
 import { startDialogue, advanceDialogue } from "./dialogues.js";
 import { image, foregroundImage, extraForegroundObjectsImage } from "./assets.js";
@@ -44,26 +44,8 @@ function animate() {
 
     gameState.boundaries.forEach((boundary) => boundary.draw())
 
-    // NPC detection and drawing
-    let npcNearby = null;
-
-    npcs.forEach(npc => {
-
-      npc.draw();
-
-      // Ensure the player is aligned on the correct axis
-      const distanceX = Math.abs(npc.position.x - player.position.x);
-      const distanceY = Math.abs(npc.position.y - player.position.y);
-
-      if (
-        (distanceX === 64 && distanceY === 0 && (gameState.lastKey === "a" || gameState.lastKey === "d")) ||
-        (distanceY === 64 && distanceX === 0 && (gameState.lastKey === "w" || gameState.lastKey === "s"))
-      ) {
-        npcNearby = npc;
-      }
-    });
-
-    activeNpc = npcNearby;
+    activeNpc = getNearbyNpc();
+    npcs.forEach(npc => npc.draw());
 
     player.draw();
     foreground.draw();

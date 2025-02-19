@@ -1,6 +1,7 @@
 import { Sprite, Boundary } from "./classes.js";
 import { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage } from "./assets.js";
-import { gameState } from "./constants.js";
+import { TILE_SIZE, gameState } from "./constants.js";
+import { player } from "./player.js";
 
 const npcs = [
   // new Sprite({
@@ -57,4 +58,22 @@ npcs.forEach(npc => {
   gameState.talkedToNPCs[npc.name] = false;
 });
 
-export { npcs };
+function getNearbyNpc() {
+  let npcNearby = null;
+
+  npcs.forEach(npc => {
+    const distanceX = Math.abs(npc.position.x - player.position.x);
+    const distanceY = Math.abs(npc.position.y - player.position.y);
+
+    if (
+      (distanceX === TILE_SIZE && distanceY === 0 && (gameState.lastKey === "a" || gameState.lastKey === "d")) ||
+      (distanceY === TILE_SIZE && distanceX === 0 && (gameState.lastKey === "w" || gameState.lastKey === "s"))
+    ) {
+      npcNearby = npc;
+    }
+  });
+
+  return npcNearby;
+}
+
+export { npcs, getNearbyNpc };
