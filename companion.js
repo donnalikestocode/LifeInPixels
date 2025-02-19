@@ -40,9 +40,9 @@ function moveDonna() {
 
   console.log("🚀 Moving Donna...");
 
-  const moveAmount = TILE_SIZE / gameState.MOVEMENT_STEPS;
+  const moveAmount = TILE_SIZE/16;
   let stepProgress = 0
-  const maxSteps = TILE_SIZE * 3;
+  const maxSteps = TILE_SIZE *3;
 
   const interval = setInterval(() => {
     if (stepProgress >= maxSteps) {
@@ -80,7 +80,8 @@ function moveDonna() {
     stepProgress += moveAmount;
 
     donna.frameCounter++;
-    if (donna.frameCounter % 4 === 0) {
+    if (donna.frameCounter % 2 === 0) {
+      console.log("🔄 Donna frame index: ", donna.frameCounter);
       donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
     }
 
