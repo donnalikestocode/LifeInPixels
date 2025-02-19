@@ -55,7 +55,7 @@ function moveDonna() {
   console.log("🚀 Moving Donna...");
 
   // const moveAmount = TILE_SIZE/16;
-  const moveAmount = TILE_SIZE/gameState.MOVEMENT_STEPS;
+  const moveAmount = TILE_SIZE/8;
   let stepProgress = 0
   const maxSteps = TILE_SIZE *3;
 
