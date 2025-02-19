@@ -40,7 +40,7 @@ function moveDonna() {
 
   console.log("🚀 Moving Donna...");
 
-  const moveAmount = TILE_SIZE / window.MOVEMENT_STEPS;
+  const moveAmount = TILE_SIZE / gameState.MOVEMENT_STEPS;
   let stepProgress = 0
   const maxSteps = TILE_SIZE * 3;
 
@@ -98,43 +98,6 @@ function moveDonna() {
     }
   }, 150);
 }
-
-// function smoothMoveDonna(targetX, targetY) {
-//   if (donna.moving) return; // Prevent duplicate movement
-
-//   donna.moving = true; // Lock movement until finished
-
-//   let startX = donna.position.x;
-//   let startY = donna.position.y;
-//   let distanceX = targetX - startX;
-//   let distanceY = targetY - startY;
-//   let steps = 16; // Adjust for smoothness (higher = slower, lower = faster)
-//   let stepX = distanceX / steps;
-//   let stepY = distanceY / steps;
-//   let stepCount = 0;
-
-//   function step() {
-//     if (stepCount < steps) {
-//       donna.position.x += stepX;
-//       donna.position.y += stepY;
-//       stepCount++;
-
-//       // 🎨 **Update Animation Frames**
-//       if (stepCount % 4 === 0) { // Adjust animation speed
-//         donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
-//       }
-
-//       requestAnimationFrame(step);
-//     } else {
-//       // 🎯 Snap to the exact grid to prevent drifting
-//       donna.position.x = targetX;
-//       donna.position.y = targetY;
-//       donna.moving = false; // Unlock movement
-//     }
-//   }
-
-//   requestAnimationFrame(step);
-// }
 
 function updateDonnaPositionBasedOnKey(key) {
   if (!gameState.donnaFollowing) return;

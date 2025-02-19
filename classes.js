@@ -1,9 +1,7 @@
-const MOVEMENT_STEPS = window.MOVEMENT_STEPS || 16;
+
 import {canvas, c} from "./constants.js";
 import {offset} from "./constants.js";
 import {gameState} from "./constants.js";
-
-let bikeMode = gameState.bikeMode;
 
 class Sprite {
   constructor({ position, velocity, image, frames = {max: 1}, sprites, name, visible = true}) {
@@ -43,12 +41,12 @@ class Sprite {
       this.frames.elapsed++
     }
 
-    if (this.frames.elapsed % Math.round(bikeMode ? MOVEMENT_STEPS / 4 : MOVEMENT_STEPS/2) === 0) {
-      if (this.frames.val < this.frames.max - 1) this.frames.val++
-      else this.frames.val = 0
-    }
+    // if (this.frames.elapsed % Math.round(gameState.bikeMode ? gameState.MOVEMENT_STEPS / 4 : gameState.MOVEMENT_STEPS) === 0) {
+    //   if (this.frames.val < this.frames.max - 1) this.frames.val++
+    //   else this.frames.val = 0
+    // }
 
-    if (this.frames.elapsed >= MOVEMENT_STEPS) {
+    if (this.frames.elapsed >= gameState.MOVEMENT_STEPS) {
       this.frames.elapsed = 0;
     }
   }

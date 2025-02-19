@@ -1,4 +1,4 @@
-import {canvas, c, offset, TILE_SIZE, keys} from "./constants.js";
+import {canvas, c, offset, keys} from "./constants.js";
 import { gameState } from "./constants.js";
 import { rectangularCollision } from "./utils.js";
 import { Sprite, Boundary } from "./classes.js";
@@ -11,6 +11,7 @@ import { donna, drawDonna } from "./companion.js";
 import { refreshBoundaries } from "./boundaries.js";
 import { background, foreground, extraForegroundObjects } from "./map.js";
 import { Grid } from "./grid.js";
+import { updateDonnaPositionBasedOnKey } from "./companion.js";
 
 const grid = new Grid();
 
@@ -20,46 +21,66 @@ let animationStarted = false;
 gameState.movables.push(background, ...gameState.boundaries, foreground, extraForegroundObjects, ...npcs, donna)
 
 function animate() {
-  if (!animationStarted) {
-    animationStarted = true;
-  } else {
-    return;
+
+  // draw them in the layer order (first = first layer)
+  window.requestAnimationFrame(animate);
+
+  background.draw();
+  gameState.boundaries.forEach((boundary) => boundary.draw())
+  grid.draw();
+  activeNpc = getNearbyNpc();
+  npcs.forEach(npc => npc.draw());
+
+  if (gameState.boundariesNeedUpdate) {
+    refreshBoundaries();
+    gameState.boundariesNeedUpdate = false;
   }
 
-  function loop() {
-
-    window.requestAnimationFrame(loop);
-
-
-    if (gameState.boundariesNeedUpdate) {
-      refreshBoundaries();
-      gameState.boundariesNeedUpdate = false;
-    }
-
-    background.draw();
-    grid.draw();
-    if (donna.visible) {
-      drawDonna();
-    }
-
-    gameState.boundaries.forEach((boundary) => boundary.draw())
-
-    activeNpc = getNearbyNpc();
-    npcs.forEach(npc => npc.draw());
-
-    player.draw();
-    foreground.draw();
-    extraForegroundObjects.draw();
-
-    if (gameState.isDialogueActive) return;
+  if (donna.visible) {
+    drawDonna();
   }
-  loop()
+
+  if (gameState.isMoving) {
+
+    gameState.movables.forEach(movable => {
+      movable.position.x -= gameState.moveX;
+      movable.position.y -= gameState.moveY;
+    });
+
+    gameState.worldOffsetX -= gameState.moveX;
+    gameState.worldOffsetY -= gameState.moveY;
+
+    gameState.stepProgress++;
+
+    // Update animation frame every few steps (slows down animation speed)
+    if (gameState.stepProgress % Math.round(gameState.MOVEMENT_STEPS ) === 0) {
+      player.frames.val = (player.frames.val + 1) % player.frames.max;
+    }
+
+    if (gameState.stepProgress >= gameState.MOVEMENT_STEPS) {
+      gameState.isMoving = false;
+
+      // 🏃 **Update Donna's movement**
+      if (gameState.donnaFollowing) updateDonnaPositionBasedOnKey(gameState.lastKey);
+
+      // 🔄 **Handle queued movement (for smoother direction changes)**
+      if (gameState.queuedDirection) {
+        movePlayer(gameState.queuedDirection);
+        gameState.queuedDirection = null;
+      }
+    }
+  }
+
+  player.draw();
+  if (gameState.isDialogueActive) return;
+
+  foreground.draw();
+  extraForegroundObjects.draw();
 }
 
 animate()
 
 window.addEventListener("keydown", (e) => {
-  console.log(`🔍 Keydown detected: ${e.key}`);
 
   if(gameState.isDialogueActive) {
     advanceDialogue(e);
@@ -67,7 +88,6 @@ window.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "Enter") {
-    console.log(`📌 isDialogueActive: ${gameState.isDialogueActive}, isMoving: ${gameState.isMoving}, freezePerry: ${gameState.freezePerry}`);
 
     if (gameState.isDialogueActive) {
       advanceDialogue(e);
@@ -93,7 +113,6 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "b") {
 
     if (gameState.isMoving) {
-      console.log("🚫 Can't switch to bike mode while moving!");
       return;
     }
 
