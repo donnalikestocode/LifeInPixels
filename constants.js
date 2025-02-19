@@ -28,6 +28,10 @@ export const offset = {
 };
 
 export const gameState = {
+  isGameStarted: false,
+  isIntroActive: true,  // Intro dialogue is running at the start
+  introDialogueIndex: 0, // Tracks current intro dialogue step
+
   worldOffsetX: offset.x,
   worldOffsetY: offset.y,
 

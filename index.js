@@ -14,6 +14,7 @@ import { Grid } from "./grid.js";
 import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
 import { heartThoughtBubble, drawHeartThoughtBubble } from "./emotions.js";
+import { startIntroDialogue } from "./welcome.js";
 
 const grid = new Grid();
 
@@ -26,6 +27,11 @@ function animate() {
 
   // draw them in the layer order (first = first layer)
   window.requestAnimationFrame(animate);
+
+  // ✅ Show intro dialogue and prevent the game from running
+  if (gameState.isIntroActive) {
+    return; // Stops rendering game elements while intro is active
+  }
 
   background.draw();
   // gameState.boundaries.forEach((boundary) => boundary.draw())
@@ -114,6 +120,31 @@ animate()
 
 window.addEventListener("keydown", (e) => {
 
+  if (gameState.isIntroActive) {
+    if (e.key === "Enter") {
+      console.log("⏭ Advancing intro dialogue...");
+      gameState.introDialogueIndex++;
+
+      //If we've reached the last dialogue line, exit intro mode
+      if (gameState.introDialogueIndex >= introDialogue.length) {
+        console.log("🎮 Intro finished! Game starting...");
+        gameState.isIntroActive = false;
+        gameState.isGameStarted = true;
+
+        //Hide the dialogue box
+        const dialogueBox = document.getElementById("dialogueBox");
+        dialogueBox.classList.add("hidden");
+        dialogueBox.style.display = "none";
+
+        return;
+      }
+
+      // Show next intro dialogue line
+      startIntroDialogue();
+    }
+    return;
+  }
+
   if(gameState.isDialogueActive) {
     advanceDialogue(e);
     return;
@@ -152,7 +183,7 @@ window.addEventListener("keydown", (e) => {
     console.log("❤️ Showing heart thought bubble!");
     heartThoughtBubble.visible = true;
 
-    // ✅ Automatically hide after 2 seconds
+    // Automatically hide after 2 seconds
     setTimeout(() => {
       heartThoughtBubble.visible = false;
       console.log("❤️ Heart thought bubble disappeared.");
@@ -180,7 +211,11 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
-
+window.onload = () => {
+  if (gameState.isIntroActive) {
+    startIntroDialogue();
+  }
+};
 
 
 
