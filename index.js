@@ -27,8 +27,8 @@ function animate() {
   window.requestAnimationFrame(animate);
 
   background.draw();
-  gameState.boundaries.forEach((boundary) => boundary.draw())
-  grid.draw();
+  // gameState.boundaries.forEach((boundary) => boundary.draw())
+  // grid.draw();
   activeNpc = getNearbyNpc();
   npcs.forEach(npc => npc.draw());
 
