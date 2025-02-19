@@ -23,14 +23,9 @@ const thoughtBubble = {
 function drawThoughtBubble() {
   if (!thoughtBubble.visible) return;
 
-  // console.log('drawing thought bubble')
-
-  // thoughtBubble.position.x = player.position.x - 16;
-  // thoughtBubble.position.y = player.position.y - 48;
-
   c.drawImage(
     thoughtBubble.currentSprite,
-    0, // Offset to get the correct frame
+    0,
     0,
     thoughtBubble.width,
     thoughtBubble.height,

@@ -13,6 +13,7 @@ import { background, foreground, extraForegroundObjects } from "./map.js";
 import { Grid } from "./grid.js";
 import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
+import { heartThoughtBubble, drawHeartThoughtBubble } from "./emotions.js";
 
 const grid = new Grid();
 
@@ -97,10 +98,16 @@ function animate() {
     drawThoughtBubble();
   }
 
-  if (gameState.isDialogueActive) return;
+  if (heartThoughtBubble?.visible) {
+    console.log("drawing heart thought bubble");
+    drawHeartThoughtBubble();
+  }
 
   foreground.draw();
   extraForegroundObjects.draw();
+
+  if (gameState.isDialogueActive) return;
+
 }
 
 animate()
@@ -140,6 +147,18 @@ window.addEventListener("keydown", (e) => {
     if (!gameState.queuedDirection) gameState.queuedDirection = e.key;
     return;
   }
+
+  if (e.key === "h" && gameState.donnaFollowing) {
+    console.log("❤️ Showing heart thought bubble!");
+    heartThoughtBubble.visible = true;
+
+    // ✅ Automatically hide after 2 seconds
+    setTimeout(() => {
+      heartThoughtBubble.visible = false;
+      console.log("❤️ Heart thought bubble disappeared.");
+    }, 2000); // 2000ms = 2 seconds
+    return;
+  };
 
   movePlayer(e.key);
 });

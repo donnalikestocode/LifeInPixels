@@ -85,4 +85,7 @@ quynhImage.src = "./img/NPCs/Quynh.png";
 const thoughtBubbleImage = new Image();
 thoughtBubbleImage.src = "./img/UI/thoughtBubble.png";
 
-export { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage, thoughtBubbleImage }
+const heartThoughtBubbleImage = new Image();
+heartThoughtBubbleImage.src = "./img/UI/Heart.png";
+
+export { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage, thoughtBubbleImage, heartThoughtBubbleImage }
