@@ -86,43 +86,6 @@ export function movePlayer(direction) {
   console.log(`🔄 Move Step: ${gameState.moveX}, ${gameState.moveY}`);
   console.log(`🚀 Moving ${direction} by ${moveX}, ${moveY}`);
   console.log(`🔢 Steps Remaining: ${gameState.stepProgress}/${gameState.MOVEMENT_STEPS}`);
-
-  // **Reduce movement steps to make direction switching feel instant**
-  // let adjustedSteps = window.MOVEMENT_STEPS;
-  // let stepSizeX = moveX / adjustedSteps;
-  // let stepSizeY = moveY / adjustedSteps;
-
-  // function stepMove() {
-  //   if (gameState.stepProgress < adjustedSteps) {
-  //     gameState.movables.forEach(movable => {
-  //       movable.position.x -= stepSizeX;
-  //       movable.position.y -= stepSizeY;
-  //     });
-
-  //     gameState.worldOffsetX -= stepSizeX;
-  //     gameState.worldOffsetY -= stepSizeY;
-
-  //     gameState.stepProgress++;
-
-  //     currentFrame = requestAnimationFrame(stepMove);
-  //   } else {
-
-  //     gameState.isMoving = false;
-  //     player.moving = false;
-
-  //     if (gameState.donnaFollowing && gameState.lastKey) {
-  //       updateDonnaPositionBasedOnKey(gameState.lastKey);
-  //     }
-
-  //     if (gameState.queuedDirection) {
-  //       movePlayer(gameState.queuedDirection);
-  //       gameState.queuedDirection = null;
-  //     }
-
-  //   }
-  // }
-
-  // requestAnimationFrame(stepMove);
 }
 
 export function updateMovementSpeed() {

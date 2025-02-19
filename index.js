@@ -31,10 +31,10 @@ function animate() {
   activeNpc = getNearbyNpc();
   npcs.forEach(npc => npc.draw());
 
-  if (gameState.boundariesNeedUpdate) {
-    refreshBoundaries();
-    gameState.boundariesNeedUpdate = false;
-  }
+  // if (gameState.boundariesNeedUpdate) {
+  //   refreshBoundaries();
+  //   gameState.boundariesNeedUpdate = false;
+  // }
 
   if (donna.visible) {
     drawDonna();
@@ -87,35 +87,22 @@ window.addEventListener("keydown", (e) => {
     return;
   }
 
-  if (e.key === "Enter") {
-
-    if (gameState.isDialogueActive) {
-      advanceDialogue(e);
-      return;
+  if (e.key === "Enter" && activeNpc) {
+    if (gameState.bikeMode) {
+      gameState.bikeMode = false;
+      updateMovementSpeed();
+      updatePlayerSprite();
     }
 
-    if (e.key === "Enter" && activeNpc) {
-      if (gameState.bikeMode) {
-        gameState.bikeMode = false;
-        updateMovementSpeed();
-        updatePlayerSprite();
-      }
-
-      handleNpcInteraction(activeNpc);
-
-      startDialogue(activeNpc.name);
-      return;
-    }
-
-  if (gameState.isDialogueActive) return;
+    handleNpcInteraction(activeNpc);
+    startDialogue(activeNpc.name);
+    return;
   }
 
   if (e.key === "b") {
-
     if (gameState.isMoving) {
       return;
     }
-
     gameState.bikeMode = !gameState.bikeMode;
     updateMovementSpeed();
     updatePlayerSprite();
@@ -129,17 +116,12 @@ window.addEventListener("keydown", (e) => {
 
   movePlayer(e.key);
 
-  if (e.key === "b") {
-    gameState.bikeMode = !gameState.bikeMode;
-    updateMovementSpeed();
-    updatePlayerSprite();
-  }
 
-    if (!gameState.isMoving) {
-    movePlayer(e.key);
-  } else if (!gameState.queuedDirection) {
-    gameState.queuedDirection = e.key;
-  }
+  //   if (!gameState.isMoving) {
+  //   movePlayer(e.key);
+  // } else if (!gameState.queuedDirection) {
+  //   gameState.queuedDirection = e.key;
+  // }
 
 });
 

@@ -3,6 +3,7 @@ import { npcs } from "./npcs.js";
 import { startDialogue } from "./dialogues.js";
 import { donna } from "./companion.js";
 import { moveDonna } from "./companion.js";
+import { refreshBoundaries } from "./boundaries.js";
 
 function handleNpcInteraction(npc) {
   if (!gameState.talkedToNPCs[npc.name]) {
@@ -13,11 +14,12 @@ function handleNpcInteraction(npc) {
       console.log("🎉 All NPCs talked to! Donna will now appear...");
       donna.visible = true;
 
-      if (!gameState.donnaBoundaryAdded) {
-        gameState.donnaBoundaryAdded = true;
-        gameState.boundariesNeedUpdate = true;
-        // moveDonna();
-      }
+      refreshBoundaries();
+
+      // if (!gameState.donnaBoundaryAdded) {
+      //   gameState.donnaBoundaryAdded = true;
+      //   refreshBoundaries();
+      // }
       moveDonna();
 
       // ⏳ Wait 7 seconds, then trigger Perry's realization

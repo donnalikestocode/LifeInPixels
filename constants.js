@@ -34,7 +34,6 @@ export const gameState = {
   movables: [],
 
   boundaries: [],
-  boundariesNeedUpdate: false,
 
   isMoving: false,
   lastKey: "",
@@ -48,8 +47,10 @@ export const gameState = {
 
   talkedToNPCs: {},
 
-  donnaBoundaryAdded: false,
   donnaCooldown: false,
   donnaFollowing: false,
   MOVEMENT_STEPS: 32, //this is always the walking speed initally
+
+  // boundariesNeedUpdate: false,
+  // donnaBoundaryAdded: false,
 };
