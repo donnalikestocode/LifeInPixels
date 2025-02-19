@@ -26,12 +26,8 @@ collisionsMap.forEach((row, i) => {
 })
 
 function refreshBoundaries() {
-  // console.log("🔄 Refreshing boundaries...");
-  // console.log(`📌 Current world offset: x=${worldOffsetX}, y=${worldOffsetY}`);
-
   gameState.boundaries = [];
 
-  // ✅ Apply worldOffsetX/Y dynamically instead of offset.x/y
   collisionsMap.forEach((row, i) => {
     row.forEach((symbol, j) => {
       if (symbol === 3807) {
@@ -47,7 +43,6 @@ function refreshBoundaries() {
     });
   });
 
-  // ✅ Add NPC boundaries dynamically (NO offset needed)
   npcs.forEach(npc => {
     gameState.boundaries.push(new Boundary({
       position: {
@@ -59,7 +54,6 @@ function refreshBoundaries() {
     }));
   });
 
-  // ✅ Add Donna’s boundary *only if she is visible*
   if (donna.visible) {
     gameState.boundaries.push(new Boundary({
       position: {
@@ -70,10 +64,9 @@ function refreshBoundaries() {
       height: 64
     }));
   }
-  // ✅ Update movables to recognize new boundaries
+
   gameState.movables = [background, ...gameState.boundaries, foreground, extraForegroundObjects, ...npcs, donna];
 
-  // console.log("✅ Boundaries updated. Total count:", boundaries.length);
 }
 
 export { refreshBoundaries };

@@ -23,7 +23,7 @@ export const keys = {
 
 export const TILE_SIZE = 64;
 export const offset = {
-  x: Math.floor(-600 / 64) * 64, // Force align to grid
+  x: Math.floor(-600 / 64) * 64,
   y: Math.floor(-1070 / 64) * 64
 };
 

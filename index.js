@@ -10,6 +10,9 @@ import { image, foregroundImage, extraForegroundObjectsImage } from "./assets.js
 import { donna, drawDonna } from "./companion.js";
 import { refreshBoundaries } from "./boundaries.js";
 import { background, foreground, extraForegroundObjects } from "./map.js";
+import { Grid } from "./grid.js";
+
+const grid = new Grid();
 
 let activeNpc = null;
 let animationStarted = false;
@@ -20,21 +23,21 @@ function animate() {
   if (!animationStarted) {
     animationStarted = true;
   } else {
-    return; // ⛔ Stop extra calls
+    return;
   }
 
   function loop() {
 
     window.requestAnimationFrame(loop);
 
-    // ✅ Refresh boundaries *only if needed*
+
     if (gameState.boundariesNeedUpdate) {
       refreshBoundaries();
-      gameState.boundariesNeedUpdate = false;  // Reset the flag
+      gameState.boundariesNeedUpdate = false;
     }
 
     background.draw();
-    // grid.draw();
+    grid.draw();
     if (donna.visible) {
       drawDonna();
     }
@@ -67,8 +70,8 @@ window.addEventListener("keydown", (e) => {
     console.log(`📌 isDialogueActive: ${gameState.isDialogueActive}, isMoving: ${gameState.isMoving}, freezePerry: ${gameState.freezePerry}`);
 
     if (gameState.isDialogueActive) {
-      advanceDialogue(e); // ✅ Route all dialogue handling to a single function
-      return; // ⛔ Prevent other actions during dialogue
+      advanceDialogue(e);
+      return;
     }
 
     if (e.key === "Enter" && activeNpc) {
@@ -84,25 +87,24 @@ window.addEventListener("keydown", (e) => {
       return;
     }
 
-  if (gameState.isDialogueActive) return; // ⛔ Block movement during dialogue
+  if (gameState.isDialogueActive) return;
   }
 
   if (e.key === "b") {
 
     if (gameState.isMoving) {
       console.log("🚫 Can't switch to bike mode while moving!");
-      return; // Ignore if player is moving
+      return;
     }
 
     gameState.bikeMode = !gameState.bikeMode;
     updateMovementSpeed();
-    updatePlayerSprite(); // 🔄 Instantly switch to correct standing frame
+    updatePlayerSprite();
     return;
   }
 
-  // Movement Handling
   if (gameState.isMoving) {
-    if (!gameState.queuedDirection) gameState.queuedDirection = e.key;  // ✅ **Queue only if empty**
+    if (!gameState.queuedDirection) gameState.queuedDirection = e.key;
     return;
   }
 
