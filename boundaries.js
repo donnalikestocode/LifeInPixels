@@ -54,7 +54,8 @@ function refreshBoundaries() {
     }));
   });
 
-  if (donna.visible) {
+  if (donna.visible && !gameState.donnaFollowing) {
+    console.log("Adding Donna boundary");
     gameState.boundaries.push(new Boundary({
       position: {
         x: donna.position.x,

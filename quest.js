@@ -13,19 +13,12 @@ function handleNpcInteraction(npc) {
     if (Object.values(gameState.talkedToNPCs).every(Boolean)) {
       console.log("🎉 All NPCs talked to! Donna will now appear...");
       donna.visible = true;
-
       refreshBoundaries();
-
-      // if (!gameState.donnaBoundaryAdded) {
-      //   gameState.donnaBoundaryAdded = true;
-      //   refreshBoundaries();
-      // }
       moveDonna();
 
-      // ⏳ Wait 7 seconds, then trigger Perry's realization
       setTimeout(() => {
         startDialogue("PerryHint");
-      }, 7000);
+      }, 3500);
     }
 
   }

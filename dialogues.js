@@ -2,6 +2,7 @@ import { gameState } from "./constants.js";
 import { donna } from "./companion.js";
 import { donnaUpImage, donnaDownImage, donnaLeftImage, donnaRightImage } from "./assets.js";
 import { player } from "./player.js";
+import { refreshBoundaries } from "./boundaries.js";
 
 let dialogueIndex = 0;
 let currentDialogue = null;
@@ -58,6 +59,7 @@ function advanceDialogue(event) {
        if (currentDialogue === npcDialogues["Donna"]) {
         console.log("✨ Donna is now following Perry!");
         gameState.donnaFollowing = true; // 🔄 Start following after dialogue
+        refreshBoundaries();
       }
 
       dialogueIndex = 0;
