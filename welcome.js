@@ -13,13 +13,10 @@ function startIntroDialogue() {
   dialogueBox.style.opacity = "1";
   dialogueBox.style.display = "flex";
 
-  document.getElementById("dialogueText").innerText = introDialogue[gameState.introDialogueIndex];
+  document.getElementById("dialogueText").innerText = introDialogue[gameState.introDialogueIndex];;
 
-  console.log('gameState.introDialogueIndex', gameState.introDialogueIndex);
-
-    // ✅ Change the sprite based on which part of the dialogue we're on
+    // Change the sprite based on which part of the dialogue we're on
     if (gameState.introDialogueIndex < 2) {
-      console.log('thought bubble shows')
       thoughtBubble.visible = true;
       heartThoughtBubble.visible = false;
     } else {

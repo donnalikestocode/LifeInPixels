@@ -28,15 +28,10 @@ function animate() {
   // draw them in the layer order (first = first layer)
   window.requestAnimationFrame(animate);
 
-  // ✅ Show intro dialogue and prevent the game from running
   if (gameState.isIntroActive) {
-    // c.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before drawing
-    // donna.visible = true;
-    // console.log('donna position', donna.position);
-
     drawThoughtBubble();
     drawHeartThoughtBubble();
-    return; // Stops rendering game elements while intro is active
+    return;
   }
 
   background.draw();
@@ -106,12 +101,10 @@ function animate() {
   }
 
   if (thoughtBubble?.visible) {
-    console.log("drawing thought bubble");
     drawThoughtBubble();
   }
 
   if (heartThoughtBubble?.visible) {
-    console.log("drawing heart thought bubble");
     drawHeartThoughtBubble();
   }
 
@@ -128,12 +121,10 @@ window.addEventListener("keydown", (e) => {
 
   if (gameState.isIntroActive) {
     if (e.key === "Enter") {
-      console.log("⏭ Advancing intro dialogue...");
       gameState.introDialogueIndex++;
 
       //If we've reached the last dialogue line, exit intro mode
       if (gameState.introDialogueIndex >= introDialogue.length) {
-        console.log(" Intro finished! Game starting...");
         gameState.isIntroActive = false;
         gameState.isGameStarted = true;
         heartThoughtBubble.visible = false;

@@ -52,8 +52,6 @@ function drawDonna() {
 function moveDonna() {
   if (!donna.visible || gameState.donnaCooldown || gameState.donnaMoving) return;
 
-  console.log("🚀 Moving Donna...");
-
   // const moveAmount = TILE_SIZE/16;
   const moveAmount = TILE_SIZE/8;
   let stepProgress = 0
@@ -67,7 +65,6 @@ function moveDonna() {
 
     let nextY = donna.position.y - moveAmount * donna.direction;
 
-    // 🛑 **Check if Perry is near Donna, but only if cooldown is inactive**
     if (!gameState.donnaCooldown) {
       const perryNearDonna =
         (Math.abs(player.position.x - donna.position.x) === TILE_SIZE &&
@@ -76,17 +73,16 @@ function moveDonna() {
           player.position.x === donna.position.x);
 
       if (perryNearDonna) {
-        console.log("🚨 Perry is near Donna! Stopping her movement.");
 
         donna.position.y = Math.round(donna.position.y / TILE_SIZE) * TILE_SIZE;
         donna.position.x = Math.round(donna.position.x / TILE_SIZE) * TILE_SIZE;
 
-        // ✅ **Activate cooldown BEFORE starting dialogue**
+        //  **Activate cooldown BEFORE starting dialogue**
         gameState.donnaCooldown = true;
 
         startDialogue("Donna");
 
-        clearInterval(interval); // ⛔ Stop Donna's movement
+        clearInterval(interval); // Stop Donna's movement
         return;
       }
     }
@@ -141,7 +137,7 @@ function updateDonnaPositionBasedOnKey(key) {
       break;
   }
 
-  // 🛑 **Collision Detection Before Moving**
+  // **Collision Detection Before Moving**
   let willCollide = gameState.boundaries.some(boundary => {
     return rectangularCollision({
       rectangle1: { position: { x: targetX, y: targetY }, width: TILE_SIZE, height: TILE_SIZE },
@@ -150,21 +146,19 @@ function updateDonnaPositionBasedOnKey(key) {
   });
 
   if (willCollide) {
-    console.log("🚧 Donna hit a wall! Stopping.");
-    return; // 🚫 Stop movement
-  }
-
-  // 🚨 **Prevent Overlap with Perry**
-  if (targetX === player.position.x && targetY === player.position.y) {
-    console.log("🚨 Overlap detected! Adjusting Donna's position.");
     return;
   }
 
-  // ✅ Store movement direction & steps for smooth movement in `animate()`
+  //  **Prevent Overlap with Perry**
+  if (targetX === player.position.x && targetY === player.position.y) {
+    return;
+  }
+
+  // Store movement direction & steps for smooth movement in `animate()`
   gameState.donnaMoveX = (targetX - donna.position.x) / gameState.MOVEMENT_STEPS;
   gameState.donnaMoveY = (targetY - donna.position.y) / gameState.MOVEMENT_STEPS;
   gameState.donnaStepProgress = 0;
-  gameState.donnaMoving = true; // ✅ Start moving Donna
+  gameState.donnaMoving = true; // Start moving Donna
 
   if (direction) {
     donna.currentSprite = gameState.bikeMode
