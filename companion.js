@@ -36,11 +36,12 @@ function drawDonna() {
 }
 
 function moveDonna() {
-  if (!donna.visible || gameState.donnaCooldown) return; // 🛑 Stop if cooldown is active
+  if (!donna.visible || gameState.donnaCooldown || gameState.donnaMoving) return;
 
   console.log("🚀 Moving Donna...");
 
-  const moveAmount = TILE_SIZE/16;
+  // const moveAmount = TILE_SIZE/16;
+  const moveAmount = TILE_SIZE/gameState.MOVEMENT_STEPS;
   let stepProgress = 0
   const maxSteps = TILE_SIZE *3;
 
@@ -93,22 +94,22 @@ function moveDonna() {
 }
 
 function updateDonnaPositionBasedOnKey(key) {
-  if (!gameState.donnaFollowing) return;
+  if (!gameState.donnaFollowing || gameState.donnaMoving) return;
 
   let targetX = donna.position.x;
   let targetY = donna.position.y;
 
   switch (key) {
-    case "w": // Perry moves UP
+    case "w":
       if (donna.position.y > player.position.y) targetY -= TILE_SIZE;
       break;
-    case "s": // Perry moves DOWN
+    case "s":
       if (donna.position.y < player.position.y) targetY += TILE_SIZE;
       break;
-    case "a": // Perry moves LEFT
+    case "a":
       if (donna.position.x > player.position.x) targetX -= TILE_SIZE;
       break;
-    case "d": // Perry moves RIGHT
+    case "d":
       if (donna.position.x < player.position.x) targetX += TILE_SIZE;
       break;
   }
@@ -132,35 +133,11 @@ function updateDonnaPositionBasedOnKey(key) {
     return;
   }
 
-  // ✅ Calculate movement direction (AFTER confirming movement)
-  let moveX = targetX - donna.position.x;
-  let moveY = targetY - donna.position.y;
-
-  // ✅ Move Donna if there's no collision
-  donna.position.x = targetX;
-  donna.position.y = targetY;
-
-  // 🎨 **Animate Donna's Frames**
-  donna.frameCounter++;
-
-  if (donna.frameCounter % 4 === 0) { // Adjust 10 for animation speed
-    donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
-  }
-
-  // 🏎 **Check if Perry is in Bike Mode**
-  if (gameState.bikeMode) {
-    donna.currentSprite =
-      moveX > 0 ? donnaBikeRightImage :
-      moveX < 0 ? donnaBikeLeftImage :
-      moveY > 0 ? donnaBikeDownImage :
-      moveY < 0 ? donnaBikeUpImage : donna.currentSprite;
-  } else {
-    donna.currentSprite =
-      moveX > 0 ? donnaRightImage :
-      moveX < 0 ? donnaLeftImage :
-      moveY > 0 ? donnaDownImage :
-      moveY < 0 ? donnaUpImage : donna.currentSprite;
-  }
+  // ✅ Store movement direction & steps for smooth movement in `animate()`
+  gameState.donnaMoveX = (targetX - donna.position.x) / gameState.MOVEMENT_STEPS;
+  gameState.donnaMoveY = (targetY - donna.position.y) / gameState.MOVEMENT_STEPS;
+  gameState.donnaStepProgress = 0;
+  gameState.donnaMoving = true; // ✅ Start moving Donna
 }
 
 export { donna,drawDonna, moveDonna, updateDonnaPositionBasedOnKey };

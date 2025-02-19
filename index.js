@@ -31,15 +31,6 @@ function animate() {
   activeNpc = getNearbyNpc();
   npcs.forEach(npc => npc.draw());
 
-  // if (gameState.boundariesNeedUpdate) {
-  //   refreshBoundaries();
-  //   gameState.boundariesNeedUpdate = false;
-  // }
-
-  if (donna.visible) {
-    drawDonna();
-  }
-
   if (gameState.isMoving) {
 
     gameState.movables.forEach(movable => {
@@ -72,6 +63,26 @@ function animate() {
   }
 
   player.draw();
+
+  if (gameState.donnaMoving) {
+    donna.position.x += gameState.donnaMoveX;
+    donna.position.y += gameState.donnaMoveY;
+    gameState.donnaStepProgress++;
+
+    if (gameState.donnaStepProgress % 16 === 0) {
+      console.log("🔄 Donna frame index3: ", donna.frameIndex);
+      donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
+    }
+
+    if (gameState.donnaStepProgress >= gameState.MOVEMENT_STEPS) {
+      gameState.donnaMoving = false;
+    }
+  }
+
+  if (donna.visible) {
+    drawDonna();
+  }
+
   if (gameState.isDialogueActive) return;
 
   foreground.draw();
