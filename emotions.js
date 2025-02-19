@@ -3,6 +3,7 @@ import { Sprite } from "./classes.js";
 import { donna } from "./companion.js";
 import { c } from "./constants.js";
 import { player } from "./player.js";
+
 const heartThoughtBubble = {
   position: {
     x: player.position.x,
@@ -16,8 +17,6 @@ const heartThoughtBubble = {
 
 function drawHeartThoughtBubble() {
   if (!heartThoughtBubble.visible) return;
-
-  console.log("🖼 Drawing heart thought bubble at:", heartThoughtBubble.position);
 
   c.drawImage(
     heartThoughtBubble.currentSprite,

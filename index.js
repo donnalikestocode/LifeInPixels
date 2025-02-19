@@ -30,6 +30,12 @@ function animate() {
 
   // ✅ Show intro dialogue and prevent the game from running
   if (gameState.isIntroActive) {
+    // c.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before drawing
+    // donna.visible = true;
+    // console.log('donna position', donna.position);
+
+    drawThoughtBubble();
+    drawHeartThoughtBubble();
     return; // Stops rendering game elements while intro is active
   }
 
@@ -127,9 +133,11 @@ window.addEventListener("keydown", (e) => {
 
       //If we've reached the last dialogue line, exit intro mode
       if (gameState.introDialogueIndex >= introDialogue.length) {
-        console.log("🎮 Intro finished! Game starting...");
+        console.log(" Intro finished! Game starting...");
         gameState.isIntroActive = false;
         gameState.isGameStarted = true;
+        heartThoughtBubble.visible = false;
+        thoughtBubble.visible = false;
 
         //Hide the dialogue box
         const dialogueBox = document.getElementById("dialogueBox");
@@ -139,7 +147,6 @@ window.addEventListener("keydown", (e) => {
         return;
       }
 
-      // Show next intro dialogue line
       startIntroDialogue();
     }
     return;
@@ -180,14 +187,10 @@ window.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "h" && gameState.donnaFollowing) {
-    console.log("❤️ Showing heart thought bubble!");
     heartThoughtBubble.visible = true;
-
-    // Automatically hide after 2 seconds
     setTimeout(() => {
       heartThoughtBubble.visible = false;
-      console.log("❤️ Heart thought bubble disappeared.");
-    }, 2000); // 2000ms = 2 seconds
+    }, 2000);
     return;
   };
 

@@ -16,16 +16,16 @@ function startDialogue(npcName) {
   }
 
   if (npcName === "Donna") {
-    faceEachOtherBeforeDialogue(); // Donna turns to face Perry
+    faceEachOtherBeforeDialogue(); //Donna turns to face Perry
   }
 
   dialogueIndex = 0;
   gameState.isDialogueActive = true;
-  gameState.freezePerry = true; // ⛔ Freeze movement
+  gameState.freezePerry = true; //Freeze movement
 
-  currentDialogue = npcDialogues[npcName]; // ✅ Track active dialogue
+  currentDialogue = npcDialogues[npcName]; // Track active dialogue
 
-  // ✅ Ensure the dialogue box is fully visible
+  // Ensure the dialogue box is fully visible
   const dialogueBox = document.getElementById("dialogueBox");
   dialogueBox.classList.remove("hidden");
   dialogueBox.style.visibility = "visible";
@@ -47,13 +47,13 @@ function advanceDialogue(event) {
       document.getElementById("dialogueBox").style.display = "none";
 
       gameState.isDialogueActive = false;
-      gameState.freezePerry = false; // ✅ Unfreeze Perry
+      gameState.freezePerry = false; // Unfreeze Perry
 
       thoughtBubble.visible = false;
 
       if (currentDialogue === npcDialogues["Donna"]) {
       console.log("✨ Donna is now following Perry!");
-      gameState.donnaFollowing = true; // 🔄 Start following after dialogue
+      gameState.donnaFollowing = true; //  Start following after dialogue
       refreshBoundaries();
       }
 
