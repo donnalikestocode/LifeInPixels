@@ -2,6 +2,9 @@ export const canvas = document.querySelector("canvas");
 canvas.width = 1024;
 canvas.height = 576;
 export const c = canvas.getContext("2d");
+c.fillStyle = "white";
+c.fillRect(0, 0, canvas.width, canvas.height);
+
 
 export const keys = {
   w: {
@@ -25,20 +28,27 @@ export const offset = {
 };
 
 export const gameState = {
-  isMoving: false,
-  queuedDirection: null,
-  stepProgress: 0,
-  isDialogueActive: false,
-  lastKey: "",
-  boundaries: [],
-  bikeMode: false,
-  talkedToNPCs: {},
-  freezePerry: false,
-  donnaBoundaryAdded: false,
-  boundariesNeedUpdate: false,
-  donnaCooldown: false,
-  donnaFollowing: false,
-  movables: [],
   worldOffsetX: 0,
   worldOffsetY: 0,
+
+  movables: [],
+
+  boundaries: [],
+  boundariesNeedUpdate: false,
+
+  isMoving: false,
+  lastKey: "",
+  queuedDirection: null,
+  stepProgress: 0,
+  freezePerry: false,
+
+  isDialogueActive: false,
+
+  bikeMode: false,
+
+  talkedToNPCs: {},
+
+  donnaBoundaryAdded: false,
+  donnaCooldown: false,
+  donnaFollowing: false,
 };

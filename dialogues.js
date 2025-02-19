@@ -1,5 +1,5 @@
 import { gameState } from "./constants.js";
-import { donna } from "./index.js";
+import { donna } from "./companion.js";
 import { donnaUpImage, donnaDownImage, donnaLeftImage, donnaRightImage } from "./assets.js";
 import { player } from "./player.js";
 

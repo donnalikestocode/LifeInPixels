@@ -2,7 +2,7 @@ import { rectangularCollision } from "./utils.js";
 import { canvas, TILE_SIZE, gameState } from "./constants.js";
 import { playerDownImage, playerUpImage, playerLeftImage, playerRightImage, playerBikeUpImage, playerBikeDownImage, playerBikeLeftImage, playerBikeRightImage } from "./assets.js";
 import { Sprite } from "./classes.js";
-import { updateDonnaPositionBasedOnKey } from "./index.js";
+import { updateDonnaPositionBasedOnKey } from "./companion.js";
 
 
 let currentFrame = null;

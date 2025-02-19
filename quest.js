@@ -1,8 +1,8 @@
 import { gameState } from "./constants.js";
 import { npcs } from "./npcs.js";
 import { startDialogue } from "./dialogues.js";
-import { donna } from "./index.js";
-import { moveDonna } from "./index.js";
+import { donna } from "./companion.js";
+import { moveDonna } from "./companion.js";
 
 function handleNpcInteraction(npc) {
   if (!gameState.talkedToNPCs[npc.name]) {
