@@ -17,6 +17,14 @@ import { heartThoughtBubble, drawHeartThoughtBubble, happyThoughtBubble, drawHap
 import { startIntroDialogue, drawKeyboardKeys, keyboardKeys, drawIntroSprite, introSprite, drawFinalIntroSprite, finalIntroSprite, drawIntroBackground, introBackground } from "./welcome.js";
 import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu, choiceMenu, updateChoiceMenu, handleChoiceSelection } from "./menu.js";
 
+
+const backgroundMusic = new Audio("./audio/SnowdinTown.mp3");
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.3;
+backgroundMusic.play().catch(error => {
+  console.log("🔇 Autoplay blocked. Waiting for user interaction...");
+});
+
 const grid = new Grid();
 
 let activeNpc = null;
@@ -136,6 +144,10 @@ function animate() {
 animate()
 
 window.addEventListener("keydown", (e) => {
+
+  if (backgroundMusic.paused) {
+    backgroundMusic.play();
+  }
 
   if (choiceMenu.isOpen) {
     console.log('choice menu is open')

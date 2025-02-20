@@ -43,8 +43,6 @@ const happyThoughtBubble = {
 
 function drawHappyThoughtBubble() {
   if (!happyThoughtBubble.visible) return;
-
-  console.log("drawing happy thought bubble");
   c.drawImage(
     happyThoughtBubble.currentSprite,
     0,
