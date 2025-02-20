@@ -89,3 +89,8 @@ const heartThoughtBubbleImage = new Image();
 heartThoughtBubbleImage.src = "./img/UI/Heart.png";
 
 export { kevinImage, lucasImage, gioImage, connieImage, davidImage, meganImage, quynhImage, thoughtBubbleImage, heartThoughtBubbleImage }
+
+const keyboardKeysImage = new Image();
+keyboardKeysImage.src = "./img/UI/keyboardKeys.png";
+
+export { keyboardKeysImage }

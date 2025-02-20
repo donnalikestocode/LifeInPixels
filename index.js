@@ -14,7 +14,7 @@ import { Grid } from "./grid.js";
 import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
 import { heartThoughtBubble, drawHeartThoughtBubble } from "./emotions.js";
-import { startIntroDialogue } from "./welcome.js";
+import { startIntroDialogue, drawKeyboardKeys, keyboardKeys } from "./welcome.js";
 import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu } from "./menu.js";
 
 const grid = new Grid();
@@ -30,9 +30,7 @@ function animate() {
   window.requestAnimationFrame(animate);
 
   if (gameState.isIntroActive) {
-    background.draw();
-    drawThoughtBubble();
-    drawHeartThoughtBubble();
+    drawKeyboardKeys();
     return;
   }
 
@@ -137,9 +135,7 @@ window.addEventListener("keydown", (e) => {
       if (gameState.introDialogueIndex >= introDialogue.length) {
         gameState.isIntroActive = false;
         gameState.isGameStarted = true;
-        heartThoughtBubble.visible = false;
-        thoughtBubble.visible = false;
-
+        keyboardKeys.visible = false;
         //Hide the dialogue box
         const dialogueBox = document.getElementById("dialogueBox");
         dialogueBox.classList.add("hidden");

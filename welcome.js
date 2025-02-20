@@ -1,7 +1,31 @@
 import { Sprite } from "./classes.js";
-import { c, gameState } from "./constants.js";
-import { heartThoughtBubble } from "./emotions.js";
-import { thoughtBubble } from "./quest.js";
+import { c, gameState, canvas } from "./constants.js";
+import { keyboardKeysImage } from "./assets.js";
+
+const keyboardKeys = {
+  position: {
+    x: 0,
+    y: 0,
+  },
+  currentSprite: keyboardKeysImage,
+  visible: false,
+  width: canvas.width,
+  height: canvas.height,
+}
+
+function drawKeyboardKeys() {
+  if (!keyboardKeys.visible) return;
+
+  console.log("🖼 Drawing keyboard keys at:", keyboardKeys.position);
+
+  c.drawImage(
+    keyboardKeys.currentSprite, // The image
+    0, 0, // Source X, Y (entire image)
+    keyboardKeys.currentSprite.width, keyboardKeys.currentSprite.height, // Source Width, Height
+    keyboardKeys.position.x, keyboardKeys.position.y, // Destination X, Y (where to draw on canvas)
+    keyboardKeys.width, keyboardKeys.height // Scale to fit
+  );
+}
 
 function startIntroDialogue() {
   const dialogueBox = document.getElementById("dialogueBox");
@@ -15,12 +39,11 @@ function startIntroDialogue() {
 
     // Change the sprite based on which part of the dialogue we're on
     if (gameState.introDialogueIndex < 2) {
-      thoughtBubble.visible = true;
-      heartThoughtBubble.visible = false;
+
+      keyboardKeys.visible = false;
     } else {
-      thoughtBubble.visible = false;
-      heartThoughtBubble.visible = true;
+      keyboardKeys.visible = true;
     }
 }
 
-export { startIntroDialogue };
+export { startIntroDialogue, keyboardKeys, drawKeyboardKeys };
