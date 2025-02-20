@@ -4,6 +4,7 @@ import { donnaUpImage, donnaDownImage, donnaLeftImage, donnaRightImage } from ".
 import { player } from "./player.js";
 import { refreshBoundaries } from "./boundaries.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
+import { showChoiceMenu } from "./menu.js";
 
 let dialogueIndex = 0;
 let currentDialogue = null;
@@ -39,6 +40,18 @@ function advanceDialogue(event) {
   if (event.key === "Enter") {
     dialogueIndex++;
 
+    if (currentDialogue === npcDialogues["Donna"] && dialogueIndex === currentDialogue.length) {
+      console.log("📢 Showing YES / HELL YES menu!");
+
+      // ✅ Hide the dialogue box before showing choices
+      document.getElementById("dialogueBox").classList.add("hidden");
+      document.getElementById("dialogueBox").style.display = "none";
+      gameState.isDialogueActive = false;
+
+      showChoiceMenu();
+      return;
+    }
+
     if (dialogueIndex < currentDialogue.length) {
       document.getElementById("dialogueText").innerText = currentDialogue[dialogueIndex];
     } else {
@@ -51,11 +64,11 @@ function advanceDialogue(event) {
 
       thoughtBubble.visible = false;
 
-      if (currentDialogue === npcDialogues["Donna"]) {
-      console.log("✨ Donna is now following Perry!");
-      gameState.donnaFollowing = true; //  Start following after dialogue
-      refreshBoundaries();
-      }
+      // if (currentDialogue === npcDialogues["Donna"]) {
+      // console.log("✨ Donna is now following Perry!");
+      // gameState.donnaFollowing = true; //  Start following after dialogue
+      // refreshBoundaries();
+      // }
 
       dialogueIndex = 0;
       currentDialogue = null;

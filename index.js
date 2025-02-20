@@ -15,7 +15,7 @@ import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
 import { heartThoughtBubble, drawHeartThoughtBubble } from "./emotions.js";
 import { startIntroDialogue, drawKeyboardKeys, keyboardKeys, drawIntroSprite, introSprite, drawFinalIntroSprite, finalIntroSprite, drawIntroBackground, introBackground } from "./welcome.js";
-import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu } from "./menu.js";
+import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu, choiceMenu, updateChoiceMenu, handleChoiceSelection } from "./menu.js";
 
 const grid = new Grid();
 
@@ -129,6 +129,20 @@ function animate() {
 animate()
 
 window.addEventListener("keydown", (e) => {
+
+  if (choiceMenu.isOpen) {
+    console.log('choice menu is open')
+    if (e.key === "w") {
+      choiceMenu.selectedOption = (choiceMenu.selectedOption - 1 + choiceMenu.options.length) % choiceMenu.options.length;
+      updateChoiceMenu();
+    } else if (e.key === "s") {
+      choiceMenu.selectedOption = (choiceMenu.selectedOption + 1) % choiceMenu.options.length;
+      updateChoiceMenu();
+    } else if (e.key === "Enter") {
+      handleChoiceSelection();
+    }
+    return;
+  }
 
   if (gameState.isIntroActive) {
     if (e.key === "Enter") {
