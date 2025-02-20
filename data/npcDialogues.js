@@ -38,7 +38,9 @@ const npcDialogues = {
     "Catch you later, bro!"
   ],
   "PerryHint": [
-    "Wait... I think I know where to find her. Donna must be at the library!"
+    "Wait... ",
+    "I think I know where to find her. ",
+    "I feel like she fell asleep at the library..."
   ],
   "Donna": [
     "Donna: Hi Perry! I've been looking for you everywhere!",
