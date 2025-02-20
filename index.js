@@ -18,7 +18,7 @@ import { startIntroDialogue, drawKeyboardKeys, keyboardKeys, drawIntroSprite, in
 import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu, choiceMenu, updateChoiceMenu, handleChoiceSelection } from "./menu.js";
 
 
-const backgroundMusic = new Audio("./audio/SnowdinTown.mp3");
+const backgroundMusic = new Audio("./audio/FortreeCity.mp3");
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.3;
 backgroundMusic.play().catch(error => {
