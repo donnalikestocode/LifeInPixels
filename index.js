@@ -81,7 +81,7 @@ function animate() {
     donna.position.y += gameState.donnaMoveY;
     gameState.donnaStepProgress++;
 
-    if (gameState.donnaStepProgress % 16 === 0) {
+    if (gameState.donnaStepProgress % 8 === 0) {
       donna.frameIndex = (donna.frameIndex + 1) % donna.maxFrames;
     }
 

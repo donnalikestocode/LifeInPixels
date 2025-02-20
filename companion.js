@@ -160,11 +160,17 @@ function updateDonnaPositionBasedOnKey(key) {
   gameState.donnaStepProgress = 0;
   gameState.donnaMoving = true; // Start moving Donna
 
+  // console.log("does it get here", direction);
   if (direction) {
-    donna.currentSprite = gameState.bikeMode
-      ? donnaBikeSprites[direction]
-      : donnaWalkSprites[direction]; // Use correct sprite based on direction
+    if (gameState.bikeMode) {
+      donna.currentSprite = donnaBikeSprites[direction];
+      donna.maxFrames = donnaBikeSprites[direction].maxFrames || 4;
+    } else {
+      donna.currentSprite = donnaWalkSprites[direction];
+      donna.maxFrames = donnaWalkSprites[direction].maxFrames || 4;
+    }
   }
+
 }
 
 export { donna,drawDonna, moveDonna, updateDonnaPositionBasedOnKey };
