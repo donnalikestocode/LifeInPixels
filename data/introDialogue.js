@@ -1,5 +1,5 @@
 const introDialogue = [
-  "Welcome to the world of Isla Vista! Press Enter to start :)",
+  "Welcome to the world of Isla Vista! Press Enter to start :) ",
   "Donna is looking for you! Talk to everyone to find out where she is!",
   "Just so you know how to move around, here's how:",
   "W: Up",
