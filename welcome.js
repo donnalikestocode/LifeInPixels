@@ -56,7 +56,7 @@ const finalIntroSprite = {
   currentSprite: happyImage,
   visible: false,
   width: 64, // ✅ Actual sprite size
-  height: 64, // ✅ Actual sprite size
+  height: 128, // ✅ Actual sprite size
 };
 
 
