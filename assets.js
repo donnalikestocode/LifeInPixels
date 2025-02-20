@@ -101,7 +101,7 @@ introSpriteImage.src = "./img/UI/introSprite.png";
 export { introSpriteImage }
 
 const happyImage = new Image();
-happyImage.src = "./img/UI/introdonna.png";
+happyImage.src = "./img/UI/introFinalDonna.png";
 
 const introBackgroundImage = new Image();
 introBackgroundImage.src = "./img/UI/introBackground.png";
