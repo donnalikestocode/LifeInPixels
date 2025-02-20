@@ -10,16 +10,16 @@ extraForegroundObjectsImage.src = "./img/extraForegroundObjects.png";
 export { image, foregroundImage, extraForegroundObjectsImage };
 
 const playerDownImage = new Image();
-playerDownImage.src = "./img/Player/Perry_playerDown.png";
+playerDownImage.src = "./img/Player/Perry_PlayerDown.png";
 
 const playerUpImage = new Image();
-playerUpImage.src = "./img/Player/Perry_playerUp.png";
+playerUpImage.src = "./img/Player/Perry_PlayerUp.png";
 
 const playerLeftImage = new Image();
-playerLeftImage.src = "./img/Player/Perry_playerLeft.png";
+playerLeftImage.src = "./img/Player/Perry_PlayerLeft.png";
 
 const playerRightImage = new Image();
-playerRightImage.src = "./img/Player/Perry_playerRight.png";
+playerRightImage.src = "./img/Player/Perry_PlayerRight.png";
 
 const playerBikeUpImage = new Image();
 playerBikeUpImage.src = "./img/Bike/Perry_bikeUp.png";
