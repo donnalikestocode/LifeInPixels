@@ -9,7 +9,7 @@ import { startDialogue, advanceDialogue } from "./dialogues.js";
 import { image, foregroundImage, extraForegroundObjectsImage } from "./assets.js";
 import { donna, drawDonna } from "./companion.js";
 import { refreshBoundaries } from "./boundaries.js";
-import { background, foreground, extraForegroundObjects } from "./map.js";
+import { background, foreground, extraForegroundObjects, map, drawWorldMap } from "./map.js";
 import { Grid } from "./grid.js";
 import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
@@ -30,6 +30,7 @@ function animate() {
   window.requestAnimationFrame(animate);
 
   if (gameState.isIntroActive) {
+    background.draw();
     drawThoughtBubble();
     drawHeartThoughtBubble();
     return;
@@ -118,6 +119,10 @@ function animate() {
     drawGameMenu();
   }
 
+  if (map.visible) {
+    drawWorldMap();
+  }
+
 }
 
 animate()
@@ -150,6 +155,11 @@ window.addEventListener("keydown", (e) => {
 
     // Toggle menu with ESC key
     if (e.key === "Escape") {
+      if (map.visible) {
+        map.visible = false;
+        return;
+      }
+
       gameMenu.isOpen = !gameMenu.isOpen;
       updateGameMenu();
       return;

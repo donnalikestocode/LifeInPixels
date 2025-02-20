@@ -1,4 +1,5 @@
 import { c, canvas } from "./constants.js";
+import { map } from "./map.js";
 
 const gameMenu = {
   isOpen: false,
@@ -20,7 +21,6 @@ function drawGameMenu() {
     return;
   }
 
-  // ✅ Update selected menu item styling
   gameMenu.options.forEach((_, index) => {
     const optionElement = document.getElementById(`menuOption${index}`);
     if (index === gameMenu.selectedOption) {
@@ -32,26 +32,22 @@ function drawGameMenu() {
 }
 
 function handleMenuSelection() {
-  console.log("✅ Selected:", gameMenu.options[gameMenu.selectedOption]);
-
   if (gameMenu.options[gameMenu.selectedOption] === "Show World Map") {
     showWorldMap();
   } else if (gameMenu.options[gameMenu.selectedOption] === "Restart Game") {
     restartGame();
   }
 
-  gameMenu.isOpen = false; // ✅ Close the menu after selection
-  updateGameMenu(); // ✅ Ensure the UI updates
+  gameMenu.isOpen = false;
+  updateGameMenu();
 }
 
 function showWorldMap() {
-  console.log("🗺 Showing the world map!");
-  // Implement map display logic here
+  map.visible = !map.visible;
 }
 
 function restartGame() {
-  console.log("🔄 Restarting game...");
-  location.reload(); // Refreshes the page to restart the game
+  location.reload();
 }
 
 function updateGameMenu() {

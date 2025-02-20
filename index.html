@@ -102,7 +102,7 @@
     }
 
     .menu-option.selected {
-      color: yellow; /* Highlighted text for selected option */
+      color: rgb(0, 30, 255); /* Highlighted text for selected option */
     }
 
 
@@ -113,6 +113,10 @@
 
   <div id="gameContainer">
     <canvas></canvas>
+
+    <div id="gameIntro" class="intro-box hidden">
+      <p id="introText">Welcome to the world of Isla Vista!</p>
+    </div>
 
     <div id="gameMenu" class="menu-box hidden">
       <div class="menu-options">
@@ -125,6 +129,7 @@
       <p id="dialogueText"></p>
       <button id="continueButton">▶</button>
     </div>
+
   </div>
 
   <script src="data/collisions.js"></script>
