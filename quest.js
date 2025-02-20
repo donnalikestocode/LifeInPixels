@@ -51,7 +51,7 @@ function handleNpcInteraction(npc) {
       setTimeout(() => {
         startDialogue("PerryHint");
         // console.log("💭 Thought bubble appears with dialogue.");
-      }, 3500); // Delay before Perry's hint
+      }, 5000); // Delay before Perry's hint
 
     }
   }
