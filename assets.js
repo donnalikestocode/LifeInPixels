@@ -94,3 +94,16 @@ const keyboardKeysImage = new Image();
 keyboardKeysImage.src = "./img/UI/keyboardKeys.png";
 
 export { keyboardKeysImage }
+
+const introSpriteImage = new Image();
+introSpriteImage.src = "./img/UI/introSprite.png";
+
+export { introSpriteImage }
+
+const happyImage = new Image();
+happyImage.src = "./img/UI/happy.png";
+
+const introBackgroundImage = new Image();
+introBackgroundImage.src = "./img/UI/introBackground.png";
+
+export { happyImage, introBackgroundImage }
