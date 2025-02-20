@@ -1,6 +1,7 @@
 import { c, canvas, gameState } from "./constants.js";
 import { map } from "./map.js";
 import { refreshBoundaries } from "./boundaries.js";
+import { happyThoughtBubble } from "./emotions.js";
 
 const gameMenu = {
   isOpen: false,
@@ -103,6 +104,7 @@ function handleChoiceSelection() {
   console.log("✨ Donna is now following Perry!");
   gameState.donnaFollowing = true; // 🔄 Start following after dialogue
   gameState.freezePerry = false; // Unfreeze Perry
+  happyThoughtBubble.visible = true;
   refreshBoundaries();
 }
 

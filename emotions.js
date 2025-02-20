@@ -1,6 +1,5 @@
-import { heartThoughtBubbleImage } from "./assets.js";
+import { heartThoughtBubbleImage, happyThoughtBubbleImage } from "./assets.js";
 import { Sprite } from "./classes.js";
-import { donna } from "./companion.js";
 import { c } from "./constants.js";
 import { player } from "./player.js";
 
@@ -31,4 +30,32 @@ function drawHeartThoughtBubble() {
   );
 }
 
-export { heartThoughtBubble, drawHeartThoughtBubble };
+const happyThoughtBubble = {
+  position: {
+    x: player.position.x,
+    y: player.position.y -64,
+  },
+  currentSprite: happyThoughtBubbleImage,
+  visible: false,
+  width: 64,
+  height: 64,
+};
+
+function drawHappyThoughtBubble() {
+  if (!happyThoughtBubble.visible) return;
+
+  console.log("drawing happy thought bubble");
+  c.drawImage(
+    happyThoughtBubble.currentSprite,
+    0,
+    0,
+    happyThoughtBubble.width,
+    happyThoughtBubble.height,
+    happyThoughtBubble.position.x,
+    happyThoughtBubble.position.y,
+    happyThoughtBubble.width,
+    happyThoughtBubble.height,
+  );
+}
+
+export { heartThoughtBubble, drawHeartThoughtBubble, happyThoughtBubble, drawHappyThoughtBubble };

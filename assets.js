@@ -107,3 +107,8 @@ const introBackgroundImage = new Image();
 introBackgroundImage.src = "./img/UI/introBackground.png";
 
 export { happyImage, introBackgroundImage }
+
+const happyThoughtBubbleImage = new Image();
+happyThoughtBubbleImage.src = "./img/UI/happyThoughtBubble.png";
+
+export { happyThoughtBubbleImage }

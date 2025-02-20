@@ -13,7 +13,7 @@ import { background, foreground, extraForegroundObjects, map, drawWorldMap } fro
 import { Grid } from "./grid.js";
 import { updateDonnaPositionBasedOnKey } from "./companion.js";
 import { thoughtBubble, drawThoughtBubble } from "./quest.js";
-import { heartThoughtBubble, drawHeartThoughtBubble } from "./emotions.js";
+import { heartThoughtBubble, drawHeartThoughtBubble, happyThoughtBubble, drawHappyThoughtBubble } from "./emotions.js";
 import { startIntroDialogue, drawKeyboardKeys, keyboardKeys, drawIntroSprite, introSprite, drawFinalIntroSprite, finalIntroSprite, drawIntroBackground, introBackground } from "./welcome.js";
 import { drawGameMenu, gameMenu, handleMenuSelection, updateGameMenu, choiceMenu, updateChoiceMenu, handleChoiceSelection } from "./menu.js";
 
@@ -101,6 +101,13 @@ function animate() {
 
   if (donna.visible) {
     drawDonna();
+  }
+
+  if (happyThoughtBubble.visible) {
+    drawHappyThoughtBubble();
+    setTimeout(() => {
+      happyThoughtBubble.visible = false;
+    }, 4000);
   }
 
   if (thoughtBubble?.visible) {

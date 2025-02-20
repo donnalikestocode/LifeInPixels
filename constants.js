@@ -51,6 +51,7 @@ export const gameState = {
 
   talkedToNPCs: {},
 
+  happyDonna: false,
   donnaCooldown: false,
   donnaFollowing: false,
   MOVEMENT_STEPS: 16, //this is always the walking speed initally
