@@ -25,7 +25,7 @@ const npcs = [
     name: "Connie"
   }),
   new Sprite({
-    position: {x: 2560, y: 704 },
+    position: {x: 640, y: -246 },
     image: davidImage,
     name: "David"
   }),
