@@ -9,7 +9,7 @@ const npcDialogues = {
   "David": [
     "DAVID: Wait, there's a math final? Ah, shit.",
     "I should probably text Donna too...",
-    "She’s always got the best notes.".
+    "She’s always got the best notes.",
     "A trainer never stops learning... even if it’s just before the test!"
   ],
   "Megan": [
@@ -56,7 +56,7 @@ const npcDialogues = {
     "But I caught the only one that matters. 💙",
     "No matter where life takes us...",
     "I’m happy to walk (or bike 🚴‍♂️) this journey alongside you.",
-    "A true trainer never walks alone... and I choose you! xD"
+    "A true trainer never walks alone... and I choose you! xD",
     "So will you continue to explore this world with me... side by side? ♥️",
   ]
 };
