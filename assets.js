@@ -10,16 +10,16 @@ extraForegroundObjectsImage.src = "./img/extraForegroundObjects.png";
 export { image, foregroundImage, extraForegroundObjectsImage };
 
 const playerDownImage = new Image();
-playerDownImage.src = "./img/Player/Perry_PlayerDown.png";
+playerDownImage.src = "./img/Player/Perry_playerDown.png";
 
 const playerUpImage = new Image();
-playerUpImage.src = "./img/Player/Perry_PlayerUp.png";
+playerUpImage.src = "./img/Player/Perry_playerUp.png";
 
 const playerLeftImage = new Image();
-playerLeftImage.src = "./img/Player/Perry_PlayerLeft.png";
+playerLeftImage.src = "./img/Player/Perry_playerLeft.png";
 
 const playerRightImage = new Image();
-playerRightImage.src = "./img/Player/Perry_PlayerRight.png";
+playerRightImage.src = "./img/Player/Perry_playerRight.png";
 
 const playerBikeUpImage = new Image();
 playerBikeUpImage.src = "./img/Bike/Perry_bikeUp.png";
@@ -101,7 +101,7 @@ introSpriteImage.src = "./img/UI/introSprite.png";
 export { introSpriteImage }
 
 const happyImage = new Image();
-happyImage.src = "./img/UI/Happy.png";
+happyImage.src = "./img/UI/happy.png";
 
 const introBackgroundImage = new Image();
 introBackgroundImage.src = "./img/UI/introBackground.png";
