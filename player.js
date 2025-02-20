@@ -31,7 +31,7 @@ export function movePlayer(direction) {
 
   if (gameState.isDialogueActive || gameState.isMoving|| gameState.freezePerry) return;
 
-  gameState.MOVEMENT_STEPS = gameState.bikeMode ? 16 : 32;
+  gameState.MOVEMENT_STEPS = gameState.bikeMode ? 8 : 16;
 
   // Force instant switching when changing directions
   if (gameState.isMoving && direction !== gameState.lastKey) {
@@ -85,7 +85,7 @@ export function movePlayer(direction) {
 }
 
 export function updateMovementSpeed() {
-  gameState.MOVEMENT_STEPS = gameState.bikeMode ? 16 : 32;
+  gameState.MOVEMENT_STEPS = gameState.bikeMode ? 8 : 16;
 }
 
 export function updatePlayerSprite() {
