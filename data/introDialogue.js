@@ -8,5 +8,6 @@ const introDialogue = [
   "D: Right",
   "B: Activate bike mode (only when not walking!)",
   "Enter: Start talking to an NPC",
+  "ESC: View Menu options",
   "Now, let's get started! XD"
 ];
