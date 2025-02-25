@@ -1,0 +1,8 @@
+{
+  "label": "Things I Learned",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Things I learned while making the game"
+  }
+}
