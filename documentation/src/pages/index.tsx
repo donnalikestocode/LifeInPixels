@@ -22,11 +22,16 @@ function HomepageHeader() {
           <Heading as="h1" className={styles.heroTitle}>
             {siteConfig.title}
           </Heading>
-          <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
+          {/* <p className={styles.heroSubtitle}>{siteConfig.tagline}</p> */}
           <div className={styles.buttons}>
-            <Link className="button button--secondary button--lg" to="/docs/intro">
-              Play Here!
-            </Link>
+          <a
+            className="button button--secondary button--lg"
+            href="https://donnalikestocode.github.io/forPerry/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Play Here!
+          </a>
           </div>
         </div>
       </div>
