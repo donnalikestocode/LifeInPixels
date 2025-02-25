@@ -3,21 +3,64 @@
  * and scoped locally.
  */
 
-.heroBanner {
-  padding: 4rem 0;
-  text-align: center;
+ .heroBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-height: 30vh; /* Allow flexibility instead of fixed height */
+  max-height: 80vh; /* Still maintain max height */
+  background-color: #ffffff;
   position: relative;
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroContainer {
+  width: 100%;
+  max-height: 100%; /* Limits the image height */
+  position: relative;
+}
+
+.heroGif {
+  width: 100%; /* Takes up full width */
+  max-width: 2000px; /* Limits maximum width */
+  height: auto;
+  object-fit: cover;
+  /* border-radius: 10px; */
+  top: 0;
+  left: 0;
+  z-index: 0;
+
+}
+
+.textOverlay {
+  position: absolute;
+  bottom: 15%; /* Moves text near the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1;
+  color: white;
+  background: rgba(0, 0, 0, 0.0); /* Adds slight transparency for readability */
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%; /* Ensures text block stays within the frame */
+  max-width: 800px;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
 }
 
 .buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-top: 10px;
 }

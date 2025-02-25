@@ -1,0 +1,8 @@
+{
+  "label": "Game Overview",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Story of the game and how to play it"
+  }
+}

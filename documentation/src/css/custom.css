@@ -5,26 +5,29 @@
  */
 
 /* You can override the default Infima variables here. */
+/* 🌸 Light Mode (Cherry Blossom Theme) */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #FFB7C5; /* Soft Cherry Blossom Pink */
+  --ifm-color-primary-dark: #F4A3B5;
+  --ifm-color-primary-darker: #E68EA1;
+  --ifm-color-primary-darkest: #D97B8F;
+  --ifm-color-primary-light: #FFC2CF;
+  --ifm-color-primary-lighter: #FFD6DC;
+  --ifm-color-primary-lightest: #FFE8E9;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 183, 197, 0.2); /* Light pink highlight */
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+
+/* 🌙 Dark Mode (Muted Plum Pink Theme) */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #D988A1; /* Muted Deep Pink */
+  --ifm-color-primary-dark: #C5728C;
+  --ifm-color-primary-darker: #B05D78;
+  --ifm-color-primary-darkest: #9A4A64;
+  --ifm-color-primary-light: #E29DB4;
+  --ifm-color-primary-lighter: #EFAAC2;
+  --ifm-color-primary-lightest: #F7C2D4;
+  --docusaurus-highlighted-code-line-bg: rgba(44, 221, 182, 0.2); /* Soft muted pink */
 }
+

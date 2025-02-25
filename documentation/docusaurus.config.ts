@@ -30,7 +30,6 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
   presets: [
     [
       'classic',
@@ -61,14 +60,26 @@ const config: Config = {
           customCss: './src/css/custom.css',
         },
       } satisfies Preset.Options,
-    ],
+    ]
   ],
+
+  // plugins: [
+  //   [
+  //     '@docusaurus/plugin-content-docs',
+  //     {
+  //       id: 'game',
+  //       path: 'game',
+  //       routeBasePath: 'game',
+  //       sidebarPath: './sidebars.ts',
+  //     },
+  //   ],
+  // ],
 
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Pixel Adventures',
+      title: 'LifeInPixels',
       logo: {
         alt: 'My Site Logo',
         src: 'img/cherryblossom.png',
@@ -78,9 +89,14 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Docs',
         },
-        // {to: '/blog', label: 'Blog', position: 'left'},
+        {
+          type: 'docSidebar',
+          sidebarId: 'gameSidebar',
+          label: 'Game',
+          position: 'left',
+        },
         {
           href: 'https://github.com/donnalikestocode/forPerry',
           label: 'GitHub',
