@@ -1,23 +1,20 @@
 {
-  "name": "perryvalentines",
+  "name": "lifeinpixels",
   "version": "1.0.0",
-  "workspaces": [
-    "game",
-    "documentation"
-  ],
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/donnalikestocode/PerryVday.git"
+    "url": "git+https://github.com/donnalikestocode/LifeInPixels.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/donnalikestocode/PerryVday/issues"
+    "url": "https://github.com/donnalikestocode/LifeInPixels/issues"
   },
-  "homepage": "https://github.com/donnalikestocode/PerryVday#readme",
+  "homepage": "https://github.com/donnalikestocode/LifeInPixels#readme",
   "description": ""
 }
